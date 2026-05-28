@@ -1,0 +1,55 @@
+# requirements.txt
+
+# ── FastAPI Framework ──────────────────────────────────────────────────────────
+fastapi
+uvicorn[standard]
+python-multipart
+websockets
+aiofiles
+
+# ── Database ───────────────────────────────────────────────────────────────────
+sqlalchemy
+psycopg[binary]
+alembic
+
+# ── Pydantic ───────────────────────────────────────────────────────────────────
+pydantic
+pydantic-settings
+
+# ── Authentication ─────────────────────────────────────────────────────────────
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+
+# ── AI / ML Libraries ──────────────────────────────────────────────────────────
+scikit-learn
+numpy
+pandas
+joblib
+
+# ── LLM APIs ──────────────────────────────────────────────────────────────────
+openai
+
+# ── Redis (caching + Pub/Sub + real-time monitor) ─────────────────────────────
+redis
+
+# ── Background tasks ──────────────────────────────────────────────────────────
+celery
+
+# ── Data visualisation (ExplainableAI charts) ─────────────────────────────────
+matplotlib
+seaborn
+
+# ── HTTP client (tests + internal calls) ──────────────────────────────────────
+httpx
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+python-dateutil
+pytz
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+pytest
+pytest-asyncio
+
+# ── Monitoring & Observability ────────────────────────────────────────────────
+sentry-sdk

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import PageWrapper from '@/components/layout/PageWrapper';
@@ -9,6 +9,7 @@ import ConfidenceScore from '@/components/ai/ConfidenceScore';
 import ExplainableAI from '@/components/ai/ExplainableAI';
 import CustomSparkline from '@/components/charts/CustomSparkline';
 import { getStudentById, Student, students } from '@/lib/data/students';
+import { api } from '@/lib/api';
 import { interventionCatalog, InterventionCatalog } from '@/lib/data/school-metrics';
 import { 
   ArrowLeft, 
@@ -32,11 +33,50 @@ export default function StudentProfilePage() {
   const params = useParams();
   const router = useRouter();
   const studentId = params?.id as string;
-  const student = getStudentById(studentId);
 
+  const [student, setStudent] = useState<Student | null>(null);
+  const [loading, setLoading] = useState(true);
   const [newNote, setNewNote] = useState('');
   const [noteType, setNoteType] = useState<'academic' | 'emotional' | 'behavioral' | 'positive'>('academic');
   const [isSavingNote, setIsSavingNote] = useState(false);
+  const [role, setRole] = useState('admin');
+
+  useEffect(() => {
+    const fetchStudent = async () => {
+      if (!studentId) return;
+      
+      const savedRole = localStorage.getItem('userRole') || 'admin';
+      const savedUserCode = localStorage.getItem('userCode') || '';
+      setRole(savedRole);
+
+      // Parent validation
+      if (savedRole === 'parent' && studentId.toLowerCase() !== savedUserCode.toLowerCase()) {
+        router.push('/dashboard');
+        return;
+      }
+
+      setLoading(true);
+      const data = await api.getStudentById(studentId);
+      
+      // Teacher validation: only allow Class 8/9 students
+      if (savedRole === 'teacher' && data && data.class !== '8' && data.class !== '9') {
+        router.push('/dashboard');
+        return;
+      }
+
+      setStudent(data);
+      setLoading(false);
+    };
+    fetchStudent();
+  }, [studentId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[#C75B39] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!student) {
     return (
@@ -86,22 +126,43 @@ export default function StudentProfilePage() {
         
         {/* BACK BAR & QUICK HEAD INFO */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <Link 
-            href="/students" 
-            className="inline-flex items-center gap-1 text-xs font-semibold text-[#6B7280] hover:text-[#1A1A2E]"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Students Queue
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[#6B7280] font-medium">Guardian: <span className="text-[#1A1A2E] font-bold">{student.guardianName}</span></span>
-            <a 
-              href={`tel:${student.guardianPhone}`} 
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#F0FDF4] hover:bg-green-100/80 border border-[#A8D5BA] rounded-xl text-xs font-semibold text-[#4A7C59]"
+          {role === 'parent' ? (
+            <Link 
+              href="/dashboard" 
+              className="inline-flex items-center gap-1 text-xs font-semibold text-[#6B7280] hover:text-[#1A1A2E]"
             >
-              <Phone className="w-3.5 h-3.5" /> Call: {student.guardianPhone}
-            </a>
-          </div>
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Care Portal Dashboard
+            </Link>
+          ) : (
+            <Link 
+              href="/students" 
+              className="inline-flex items-center gap-1 text-xs font-semibold text-[#6B7280] hover:text-[#1A1A2E]"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Students Queue
+            </Link>
+          )}
+
+          {role === 'parent' ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[#6B7280] font-medium">Principal Office Contact:</span>
+              <a 
+                href="tel:+91 141 2740361" 
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#F0FDF4] hover:bg-green-100/80 border border-[#A8D5BA] rounded-xl text-xs font-semibold text-[#4A7C59]"
+              >
+                <Phone className="w-3.5 h-3.5" /> Call Office
+              </a>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[#6B7280] font-medium">Guardian: <span className="text-[#1A1A2E] font-bold">{student.guardianName}</span></span>
+              <a 
+                href={`tel:${student.guardianPhone}`} 
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#F0FDF4] hover:bg-green-100/80 border border-[#A8D5BA] rounded-xl text-xs font-semibold text-[#4A7C59]"
+              >
+                <Phone className="w-3.5 h-3.5" /> Call: {student.guardianPhone}
+              </a>
+            </div>
+          )}
         </div>
 
         {/* HERO STRIP */}
@@ -223,9 +284,11 @@ export default function StudentProfilePage() {
             <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm space-y-4">
               <div className="flex justify-between items-center border-b border-[#E8DDD0] pb-3">
                 <h4 className="font-bold text-base text-[#1A1A2E] font-[family-name:var(--font-heading)]">Intervention Registry & Tasks</h4>
-                <Link href={`/interventions?student=${student.id}`} className="px-3 py-1.5 bg-[#FAF7F2] border border-[#E8DDD0] hover:border-[#C75B39]/40 rounded-xl text-xs font-bold text-[#C75B39] transition-all flex items-center gap-1">
-                  <Plus className="w-3.5 h-3.5" /> New Workplan
-                </Link>
+                {role !== 'parent' && (
+                  <Link href={`/interventions?student=${student.id}`} className="px-3 py-1.5 bg-[#FAF7F2] border border-[#E8DDD0] hover:border-[#C75B39]/40 rounded-xl text-xs font-bold text-[#C75B39] transition-all flex items-center gap-1">
+                    <Plus className="w-3.5 h-3.5" /> New Workplan
+                  </Link>
+                )}
               </div>
 
               {student.interventions.length > 0 ? (

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Shield, Sparkles, Building, Lock, ArrowRight, UserCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,27 +13,45 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    // Simulate authentication
-    setTimeout(() => {
-      if (schoolCode && password) {
-        // Redirect to dashboard (in this mock-up, any valid input redirects)
-        router.push('/dashboard');
-      } else {
-        setError('Please fill in all fields. (Use any mock details for demo)');
-        setIsLoading(false);
+    // Use our new hybrid api layer to authenticate
+    const result = await api.login(schoolCode, password);
+
+    if (result.success) {
+      // Persist the user credentials and role for dynamically adjusting the layouts
+      localStorage.setItem('userRole', role);
+      localStorage.setItem('userCode', schoolCode);
+      if (result.name) {
+        localStorage.setItem('userName', result.name);
       }
-    }, 800);
+      router.push('/dashboard');
+    } else {
+      setError('Invalid credentials. (Check seeded IDs like TCH-001 with password: demo-pass-123)');
+      setIsLoading(false);
+    }
   };
 
   const fillMockDetails = () => {
-    setSchoolCode('RJ-JPR-2026');
-    setPassword('••••••••');
+    if (role === 'admin') {
+      setSchoolCode('RJ-JPR-2026');
+    } else if (role === 'teacher') {
+      setSchoolCode('TCH-001');
+    } else if (role === 'parent') {
+      setSchoolCode('STU-001');
+    } else if (role === 'ngo') {
+      setSchoolCode('NGO-WEST-JAIPUR');
+    }
+    setPassword('demo-pass-123');
   };
 
   return (
@@ -112,79 +131,99 @@ export default function LoginPage() {
               </div>
 
               {/* Role Selectors */}
-              <div className="grid grid-cols-4 gap-2 mb-6">
+              <div className="grid grid-cols-4 gap-2 mb-6" suppressHydrationWarning>
                 {(['admin', 'teacher', 'parent', 'ngo'] as const).map((r) => (
-                  <button
+                  <motion.button
                     key={r}
                     type="button"
                     onClick={() => setRole(r)}
-                    className={`py-2 px-1 rounded-lg text-xs font-semibold capitalize border transition-all duration-200 ${
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`py-2 px-1 rounded-lg text-xs font-semibold capitalize border transition-all duration-150 cursor-pointer ${
                       role === r
-                        ? 'bg-[#1A1A2E] text-white border-[#1A1A2E]'
+                        ? 'bg-[#1A1A2E] text-white border-[#1A1A2E] shadow-sm'
                         : 'bg-[#FAF7F2] text-[#6B7280] border-[#E8DDD0] hover:bg-[#FFF8F0] hover:text-[#1A1A2E]'
                     }`}
                   >
                     {r}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5 flex items-center gap-1">
-                    <Building className="w-3.5 h-3.5 text-[#6B7280]" />
-                    {role === 'parent' ? 'Student Admission ID' : role === 'ngo' ? 'District / NGO ID' : 'School Code / UDISE Code'}
-                  </label>
-                  <input
-                    type="text"
-                    value={schoolCode}
-                    onChange={(e) => setSchoolCode(e.target.value)}
-                    placeholder={role === 'parent' ? 'e.g. STU-001' : role === 'ngo' ? 'e.g. NGO-WEST-01' : 'e.g. RJ-JPR-2026'}
-                    className="w-full px-3.5 py-2.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 transition-all text-[#1A1A2E]"
-                    required
-                  />
+              {mounted ? (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5 flex items-center gap-1">
+                      <Building className="w-3.5 h-3.5 text-[#6B7280]" />
+                      {role === 'parent' ? 'Student Admission ID' : role === 'ngo' ? 'District / NGO ID' : 'School Code / UDISE Code'}
+                    </label>
+                    <input
+                      type="text"
+                      value={schoolCode}
+                      onChange={(e) => setSchoolCode(e.target.value)}
+                      placeholder={
+                        role === 'parent' ? 'e.g. STU-001' : 
+                        role === 'teacher' ? 'e.g. TEA-8A-MEENAKSHI' : 
+                        role === 'ngo' ? 'e.g. NGO-WEST-JAIPUR' : 'e.g. RJ-JPR-2026'
+                      }
+                      className="w-full px-3.5 py-2.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 transition-all text-[#1A1A2E]"
+                      required
+                      suppressHydrationWarning
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5 flex items-center gap-1">
+                      <Lock className="w-3.5 h-3.5 text-[#6B7280]" />
+                      Portal Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full px-3.5 py-2.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 transition-all text-[#1A1A2E]"
+                      required
+                      suppressHydrationWarning
+                    />
+                  </div>
+
+                  {error && (
+                    <p className="text-xs text-[#DC2626] font-medium bg-[#FEF2F2] p-2.5 rounded-lg border border-[#DC2626]/10">
+                      {error}
+                    </p>
+                  )}
+
+                  <motion.button
+                    type="submit"
+                    disabled={isLoading}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="w-full py-3 bg-[#C75B39] hover:bg-[#A94A2D] disabled:bg-[#C75B39]/60 text-white font-semibold rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 group mt-2 cursor-pointer"
+                    suppressHydrationWarning
+                  >
+                    {isLoading ? 'Verifying access...' : 'Access Dashboard'}
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                </form>
+              ) : (
+                <div className="h-48 flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-[#C75B39] border-t-transparent rounded-full animate-spin" />
                 </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5 flex items-center gap-1">
-                    <Lock className="w-3.5 h-3.5 text-[#6B7280]" />
-                    Portal Password
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full px-3.5 py-2.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 transition-all text-[#1A1A2E]"
-                    required
-                  />
-                </div>
-
-                {error && (
-                  <p className="text-xs text-[#DC2626] font-medium bg-[#FEF2F2] p-2.5 rounded-lg border border-[#DC2626]/10">
-                    {error}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3 bg-[#C75B39] hover:bg-[#A94A2D] disabled:bg-[#C75B39]/60 text-white font-semibold rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 group mt-2 cursor-pointer"
-                >
-                  {isLoading ? 'Verifying access...' : 'Access Dashboard'}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </form>
+              )}
 
               {/* Demo Assist */}
               <div className="mt-5 pt-4 border-t border-[#E8DDD0] text-center">
-                <button
+                <motion.button
                   type="button"
                   onClick={fillMockDetails}
-                  className="text-xs text-[#C75B39] hover:underline font-semibold"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-xs text-[#C75B39] hover:underline font-semibold cursor-pointer"
+                  suppressHydrationWarning
                 >
-                  Quick Fill Demo Details
-                </button>
+                  Quick Fill {role.toUpperCase()} Demo Details
+                </motion.button>
               </div>
             </motion.div>
           </div>

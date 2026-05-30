@@ -1,9 +1,16 @@
 import React from 'react';
-import { riskDistribution } from '@/lib/data/students';
+import { Student } from '@/lib/data/students';
 
-export default function RiskDistributionRing() {
-  const { critical, high, moderate, stable } = riskDistribution;
-  const total = critical + high + moderate + stable;
+interface RiskDistributionRingProps {
+  students: Student[];
+}
+
+export default function RiskDistributionRing({ students }: RiskDistributionRingProps) {
+  const critical = students.filter(s => s.riskLevel === 'critical').length;
+  const high = students.filter(s => s.riskLevel === 'high').length;
+  const moderate = students.filter(s => s.riskLevel === 'moderate').length;
+  const stable = students.filter(s => s.riskLevel === 'stable').length;
+  const total = critical + high + moderate + stable || 1;
 
   const data = [
     { label: 'Critical', value: critical, percentage: (critical / total) * 100, color: 'bg-[#DC2626]', border: 'border-[#DC2626]', text: 'text-[#DC2626]' },

@@ -28,6 +28,7 @@ export interface StudentObservation {
 
 export interface Student {
   id: string;
+  dbId?: string;
   name: string;
   class: string;
   section: string;
@@ -362,3 +363,22 @@ export const riskDistribution = {
 };
 
 export const months = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+
+export const getLocalStudents = (): Student[] => {
+  if (typeof window === 'undefined') return students;
+  const local = localStorage.getItem('edushield_students');
+  if (!local) {
+    localStorage.setItem('edushield_students', JSON.stringify(students));
+    return students;
+  }
+  try {
+    return JSON.parse(local);
+  } catch (e) {
+    return students;
+  }
+};
+
+export const saveLocalStudents = (list: Student[]) => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('edushield_students', JSON.stringify(list));
+};

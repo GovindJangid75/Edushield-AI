@@ -12,4 +12,5 @@ from app.models.alerts import Alert
 from app.models.teacher_workload import TeacherWorkload
 from app.models.school_health_metrics import SchoolHealthMetric
 from app.models.behavioral_patterns import BehavioralPattern
-from app.models.analytics import AnalyticsSnapshot
+from app.models.analytics import AnalyticsSnapshot
+from app.models.import_history import ImportHistory

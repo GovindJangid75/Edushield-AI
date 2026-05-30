@@ -23,6 +23,7 @@ class StudentResponse(StudentBase):
     id: UUID
     is_active: bool
     created_at: datetime
+    latest_risk_assessment: Optional[dict] = None
     
     class Config:
         from_attributes = True

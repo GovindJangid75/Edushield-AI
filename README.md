@@ -278,8 +278,7 @@ EduShield AI doesn’t just output a number; it runs a modular pipeline to give 
 
 ## 🤝 Contributors & Hackathon Team
 
-Developed with ❤️ for the **Wadhwani AI Hackathon** by **Govind Jangid & Team**.
+Developed with ❤️ for the **Wadhwani AI Hackathon** by **Team: OptiMeal**.
 
-* **GitHub:** [@GovindJangid75](https://github.com/GovindJangid75)
 * **Backend:** [Edushield-AI-Backend](https://github.com/GovindJangid75/Edushield-AI-Backend)
 * **Frontend:** [EduShield-AI-Frontend](https://github.com/gouravnagori/EduShield-AI)

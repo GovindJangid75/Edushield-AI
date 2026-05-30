@@ -40,8 +40,13 @@ export default function CustomSparkline({
   const fillD = `${pathD} L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`;
 
   return (
-    <div className="relative" style={{ width, height }}>
-      <svg width={width} height={height} className="overflow-visible">
+    <div className="w-full relative bg-[#FAF7F2]/30 p-1 rounded-xl" style={{ height }}>
+      <svg 
+        viewBox={`0 0 ${width} ${height}`} 
+        width="100%" 
+        height="100%" 
+        className="overflow-visible"
+      >
         <defs>
           <linearGradient id={`grad-${color}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity="0.2" />

@@ -106,7 +106,30 @@ def list_students(skip: int = 0, limit: int = 100, class_: Optional[str] = None,
     query = db.query(Student).filter(Student.is_active == True)
     if class_:
         query = query.filter(Student.class_ == class_)
-    return query.offset(skip).limit(limit).all()
+    students = query.offset(skip).limit(limit).all()
+    
+    # Pre-fetch active risk predictions to avoid N+1 queries
+    student_ids = [str(s.id) for s in students]
+    risk_preds = db.query(RiskPrediction).filter(
+        RiskPrediction.student_id.in_(student_ids),
+        RiskPrediction.is_active == True
+    ).all()
+    
+    risk_map = {r.student_id: r for r in risk_preds}
+    
+    for s in students:
+        latest_risk = risk_map.get(str(s.id))
+        if latest_risk:
+            s.latest_risk_assessment = {
+                "risk_level": latest_risk.risk_level,
+                "risk_score": float(latest_risk.risk_score) if latest_risk.risk_score else 0,
+                "confidence_score": float(latest_risk.confidence_score) if latest_risk.confidence_score else 0,
+                "prediction_date": latest_risk.prediction_date.isoformat() if latest_risk.prediction_date else None,
+            }
+        else:
+            s.latest_risk_assessment = None
+            
+    return students
 
 
 @router.get("/{student_id}")

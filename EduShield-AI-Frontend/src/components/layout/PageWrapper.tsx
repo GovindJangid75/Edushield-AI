@@ -18,7 +18,7 @@ export default function PageWrapper({ children, title, subtitle }: PageWrapperPr
       <Sidebar />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col md:pl-[260px] pl-[72px] transition-all duration-300">
+      <div className="flex-1 flex flex-col md:pl-[260px] pl-0 transition-all duration-300">
         <Header title={title} subtitle={subtitle} />
         
         <motion.main 

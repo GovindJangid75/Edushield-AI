@@ -1,4 +1,5 @@
 import { RiskLevel } from '@/lib/data/students';
+import { useTranslation } from '@/lib/LanguageContext';
 
 interface RiskBadgeProps {
   level: RiskLevel;
@@ -6,30 +7,32 @@ interface RiskBadgeProps {
 }
 
 export default function RiskBadge({ level, className = '' }: RiskBadgeProps) {
-  const styles: Record<RiskLevel, { bg: string; text: string; label: string; border: string }> = {
+  const { t } = useTranslation();
+
+  const styles: Record<RiskLevel, { bg: string; text: string; labelKey: 'riskCritical' | 'riskHigh' | 'riskModerate' | 'riskStable'; border: string }> = {
     critical: {
       bg: 'bg-red-50',
       text: 'text-red-700',
       border: 'border-red-200/60',
-      label: 'Critical'
+      labelKey: 'riskCritical'
     },
     high: {
       bg: 'bg-orange-50',
       text: 'text-orange-700',
       border: 'border-orange-200/60',
-      label: 'High Risk'
+      labelKey: 'riskHigh'
     },
     moderate: {
       bg: 'bg-amber-50',
       text: 'text-amber-700',
       border: 'border-amber-200/60',
-      label: 'Moderate'
+      labelKey: 'riskModerate'
     },
     stable: {
       bg: 'bg-green-50',
       text: 'text-green-700',
       border: 'border-green-200/60',
-      label: 'Stable'
+      labelKey: 'riskStable'
     }
   };
 
@@ -42,7 +45,7 @@ export default function RiskBadge({ level, className = '' }: RiskBadgeProps) {
         level === 'high' ? 'bg-orange-500 risk-pulse-high' :
         level === 'moderate' ? 'bg-amber-500' : 'bg-green-600'
       }`} />
-      {current.label}
+      {t(current.labelKey)}
     </span>
   );
 }

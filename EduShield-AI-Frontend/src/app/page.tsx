@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Shield, Sparkles, Building, Lock, ArrowRight, UserCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
+import { useTranslation, useLanguage } from '@/lib/LanguageContext';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +15,9 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const { t, language } = useTranslation();
+  const { setLanguage } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
@@ -36,7 +40,7 @@ export default function LoginPage() {
       }
       router.push('/dashboard');
     } else {
-      setError('Invalid credentials. (Check seeded IDs like TCH-001 with password: demo-pass-123)');
+      setError(t('loginError'));
       setIsLoading(false);
     }
   };
@@ -68,11 +72,38 @@ export default function LoginPage() {
           </div>
           <div>
             <h1 className="text-lg font-bold font-[family-name:var(--font-heading)] leading-none tracking-tight">EduShield AI</h1>
-            <span className="text-[10px] text-[#6B7280]">AI Copilot for Early School Intervention</span>
+            <span className="text-[10px] text-[#6B7280]">{t('brandTag')}</span>
           </div>
         </div>
-        <div className="text-xs text-[#6B7280] font-medium hidden sm:block">
-          Support: <span className="text-[#C75B39]">support@edushield.ai</span>
+
+        <div className="flex items-center gap-4">
+          {/* Multi-Language Switcher Pills */}
+          <div className="flex items-center bg-white rounded-lg border border-[#E8DDD0] p-0.5 relative shadow-sm h-[38px]">
+            <button
+              onClick={() => setLanguage('en')}
+              className={`px-2.5 py-1.5 rounded-md text-xs font-bold transition-all duration-150 cursor-pointer ${
+                language === 'en'
+                  ? 'bg-[#1A1A2E] text-white shadow-sm'
+                  : 'text-[#6B7280] hover:text-[#1A1A2E]'
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setLanguage('hi')}
+              className={`px-2.5 py-1.5 rounded-md text-xs font-bold transition-all duration-150 cursor-pointer ${
+                language === 'hi'
+                  ? 'bg-[#1A1A2E] text-white shadow-sm'
+                  : 'text-[#6B7280] hover:text-[#1A1A2E]'
+              }`}
+            >
+              हिंदी
+            </button>
+          </div>
+
+          <div className="text-xs text-[#6B7280] font-medium hidden sm:block">
+            Support: <span className="text-[#C75B39]">support@edushield.ai</span>
+          </div>
         </div>
       </div>
 
@@ -84,15 +115,15 @@ export default function LoginPage() {
           <div className="md:col-span-7 space-y-6 text-left pr-4">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#FFF8F0] border border-[#E8DDD0] rounded-full text-xs font-semibold text-[#C75B39]">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Track 2.6: AI-Powered Preventive Education Intelligence</span>
+              <span>Track 2.6: {t('brandTag')}</span>
             </div>
             
             <h2 className="text-4xl sm:text-5xl font-extrabold font-[family-name:var(--font-heading)] text-[#1A1A2E] leading-tight">
-              Identify student risk <span className="text-[#C75B39]">before</span> failure.
+              {language === 'hi' ? 'छात्रों के फेल होने से ' : 'Identify student risk '}<span className="text-[#C75B39]">{language === 'hi' ? 'पहले' : 'before'}</span>{language === 'hi' ? ' उनका जोखिम पहचानें।' : ' failure.'}
             </h2>
             
             <p className="text-[#6B7280] text-base leading-relaxed max-w-lg">
-              EduShield AI acts as an early warning copilot, detecting silent dropout signals, identifying overlooked students, and protecting teacher workload in low-resource and government schools across India.
+              {t('brandDesc')}
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 pt-4">
@@ -101,8 +132,8 @@ export default function LoginPage() {
                   <Shield className="w-4 h-4 text-[#DC2626]" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-[#1A1A2E]">Explainable AI</h4>
-                  <p className="text-xs text-[#6B7280] mt-0.5">Transparent dropout & engagement predictions.</p>
+                  <h4 className="text-sm font-semibold text-[#1A1A2E]">{t('xaiTitle')}</h4>
+                  <p className="text-xs text-[#6B7280] mt-0.5">{t('xaiDesc')}</p>
                 </div>
               </div>
               <div className="p-4 bg-white border border-[#E8DDD0] rounded-xl flex items-start gap-3">
@@ -110,8 +141,8 @@ export default function LoginPage() {
                   <UserCheck className="w-4 h-4 text-[#4A7C59]" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-[#1A1A2E]">Triage Intervention</h4>
-                  <p className="text-xs text-[#6B7280] mt-0.5">Actionable steps built for Indian public schools.</p>
+                  <h4 className="text-sm font-semibold text-[#1A1A2E]">{t('triageTitle')}</h4>
+                  <p className="text-xs text-[#6B7280] mt-0.5">{t('triageDesc')}</p>
                 </div>
               </div>
             </div>
@@ -126,8 +157,8 @@ export default function LoginPage() {
               className="bg-white border border-[#E8DDD0] rounded-2xl shadow-sm p-8 relative"
             >
               <div className="text-center mb-6">
-                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">School Portal Login</h3>
-                <p className="text-xs text-[#6B7280] mt-1">Select your access role to enter the dashboard</p>
+                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('loginTitle')}</h3>
+                <p className="text-xs text-[#6B7280] mt-1">{t('loginSubtitle')}</p>
               </div>
 
               {/* Role Selectors */}
@@ -155,7 +186,7 @@ export default function LoginPage() {
                   <div>
                     <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5 flex items-center gap-1">
                       <Building className="w-3.5 h-3.5 text-[#6B7280]" />
-                      {role === 'parent' ? 'Student Admission ID' : role === 'ngo' ? 'District / NGO ID' : 'School Code / UDISE Code'}
+                      {role === 'parent' ? t('studentID') : role === 'ngo' ? t('ngoID') : t('udiseCode')}
                     </label>
                     <input
                       type="text"
@@ -163,7 +194,7 @@ export default function LoginPage() {
                       onChange={(e) => setSchoolCode(e.target.value)}
                       placeholder={
                         role === 'parent' ? 'e.g. STU-001' : 
-                        role === 'teacher' ? 'e.g. TEA-8A-MEENAKSHI' : 
+                        role === 'teacher' ? 'e.g. TCH-001' : 
                         role === 'ngo' ? 'e.g. NGO-WEST-JAIPUR' : 'e.g. RJ-JPR-2026'
                       }
                       className="w-full px-3.5 py-2.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 transition-all text-[#1A1A2E]"
@@ -175,7 +206,7 @@ export default function LoginPage() {
                   <div>
                     <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5 flex items-center gap-1">
                       <Lock className="w-3.5 h-3.5 text-[#6B7280]" />
-                      Portal Password
+                      {t('passwordLabel')}
                     </label>
                     <input
                       type="password"
@@ -202,7 +233,7 @@ export default function LoginPage() {
                     className="w-full py-3 bg-[#C75B39] hover:bg-[#A94A2D] disabled:bg-[#C75B39]/60 text-white font-semibold rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 group mt-2 cursor-pointer"
                     suppressHydrationWarning
                   >
-                    {isLoading ? 'Verifying access...' : 'Access Dashboard'}
+                    {isLoading ? t('verifyingAccess') : t('accessDashboard')}
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
                 </form>
@@ -222,7 +253,7 @@ export default function LoginPage() {
                   className="text-xs text-[#C75B39] hover:underline font-semibold cursor-pointer"
                   suppressHydrationWarning
                 >
-                  Quick Fill {role.toUpperCase()} Demo Details
+                  {t('quickFill', { role: role.toUpperCase() })}
                 </motion.button>
               </div>
             </motion.div>
@@ -235,8 +266,7 @@ export default function LoginPage() {
       <div className="w-full border-t border-[#E8DDD0] py-6 px-6 bg-white">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6B7280]">
           <div>
-            <span>Designed for state boards & low-resource environments.</span>
-            <span className="font-semibold text-[#4A7C59] ml-2">Offline-first support enabled.</span>
+            <span>{t('footerText')}</span>
           </div>
           <div className="flex gap-4">
             <span className="hover:underline cursor-pointer">UDISE Integration</span>

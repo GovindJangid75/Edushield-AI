@@ -29,9 +29,11 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from '@/lib/LanguageContext';
 
 function RiskHeatmapGrid({ students }: { students: Student[] }) {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     if (students.length > 0 && !selectedStudent) {
@@ -59,15 +61,17 @@ function RiskHeatmapGrid({ students }: { students: Student[] }) {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C75B39] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#C75B39]"></span>
             </span>
-            Classroom Risk Heatmap Grid
+            {language === 'hi' ? 'कक्षा जोखिम हीटमैप ग्रिड' : 'Classroom Risk Heatmap Grid'}
           </h3>
-          <p className="text-xs text-[#6B7280]">Tactile grid mapping individual student risk coefficients</p>
+          <p className="text-xs text-[#6B7280]">
+            {language === 'hi' ? 'व्यक्तिगत छात्र जोखिम संकेतकों को दर्शाने वाला ग्रिड' : 'Tactile grid mapping individual student risk coefficients'}
+          </p>
         </div>
         <div className="flex gap-2.5 text-[9px] font-bold">
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-emerald-500 rounded" /> Stable</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-amber-400 rounded" /> Moderate</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-orange-500 rounded" /> High</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-red-500 rounded" /> Critical</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-emerald-500 rounded" /> {t('riskStable')}</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-amber-400 rounded" /> {t('riskModerate')}</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-orange-500 rounded" /> {t('riskHigh')}</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-red-500 rounded" /> {t('riskCritical')}</span>
         </div>
       </div>
 
@@ -90,7 +94,9 @@ function RiskHeatmapGrid({ students }: { students: Student[] }) {
               </motion.button>
             ))}
           </div>
-          <p className="text-[10px] text-gray-400 mt-2 italic">Tip: Click any cell to inspect predictive variables & AI explanations.</p>
+          <p className="text-[10px] text-gray-400 mt-2 italic">
+            {language === 'hi' ? 'संकेत: छात्र के जोखिम कारणों और एआई स्पष्टीकरण को देखने के लिए किसी भी सेल पर क्लिक करें।' : 'Tip: Click any cell to inspect predictive variables & AI explanations.'}
+          </p>
         </div>
 
         {/* Selected Student Details Panel */}
@@ -108,17 +114,20 @@ function RiskHeatmapGrid({ students }: { students: Student[] }) {
                   selectedStudent.riskLevel === 'moderate' ? 'bg-amber-50 text-amber-700 border-amber-200' :
                   'bg-green-50 text-green-700 border-green-200'
                 }`}>
-                  {selectedStudent.riskLevel}
+                  {selectedStudent.riskLevel === 'critical' ? t('riskCritical') :
+                   selectedStudent.riskLevel === 'high' ? t('riskHigh') :
+                   selectedStudent.riskLevel === 'moderate' ? t('riskModerate') :
+                   t('riskStable')}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-[10px] bg-[#FAF7F2] p-2.5 rounded-lg border border-[#E8DDD0]/50">
                 <div>
-                  <span className="text-gray-400">Attendance:</span>
+                  <span className="text-gray-400">{language === 'hi' ? 'उपस्थिति:' : 'Attendance:'}</span>
                   <span className="block font-bold text-[#1A1A2E]">{selectedStudent.attendanceRate}%</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Academic Avg:</span>
+                  <span className="text-gray-400">{language === 'hi' ? 'शैक्षणिक औसत:' : 'Academic Avg:'}</span>
                   <span className="block font-bold text-[#1A1A2E]">{selectedStudent.academicScore}%</span>
                 </div>
               </div>
@@ -128,17 +137,21 @@ function RiskHeatmapGrid({ students }: { students: Student[] }) {
               </p>
 
               <div className="flex items-center justify-between pt-1">
-                <span className="text-[10px] text-[#C75B39] font-bold">AI Confidence: {selectedStudent.confidenceScore}%</span>
+                <span className="text-[10px] text-[#C75B39] font-bold">
+                  {language === 'hi' ? 'एआई का विश्वास:' : 'AI Confidence:'} {selectedStudent.confidenceScore}%
+                </span>
                 <Link 
                   href={`/students/${selectedStudent.id}`}
                   className="text-[10px] text-[#C75B39] hover:underline font-bold flex items-center gap-0.5"
                 >
-                  Full Diagnosis →
+                  {language === 'hi' ? 'पूर्ण निदान →' : 'Full Diagnosis →'}
                 </Link>
               </div>
             </div>
           ) : (
-            <p className="text-xs text-gray-400 py-6 text-center">No student selected</p>
+            <p className="text-xs text-gray-400 py-6 text-center">
+              {language === 'hi' ? 'कोई छात्र नहीं चुना गया' : 'No student selected'}
+            </p>
           )}
         </div>
       </div>
@@ -146,17 +159,23 @@ function RiskHeatmapGrid({ students }: { students: Student[] }) {
   );
 }
 
+
 export default function DashboardPage() {
   const [role, setRole] = useState<'admin' | 'teacher' | 'parent' | 'ngo'>('admin');
   const [allStudents, setAllStudents] = useState<Student[]>([]);
   const [activeTab, setActiveTab] = useState<'all-alerts' | 'hidden'>('all-alerts');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { t, language } = useTranslation();
+
+  // Multi-Class state for Teacher Dashboard
+  const [selectedClass, setSelectedClass] = useState<string>('8');
+  // Sibling state for Parent Dashboard
+  const [selectedChildId, setSelectedChildId] = useState<string>('');
 
   // Simulated parent chat states
   const [chatMessages, setChatMessages] = useState<Array<{ sender: 'parent' | 'counselor', text: string }>>([]);
   const [chatInput, setChatInput] = useState('');
-  const [chatInitialized, setChatInitialized] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -171,6 +190,8 @@ export default function DashboardPage() {
     const loadStudents = async () => {
       const data = await api.getStudents();
       setAllStudents(data);
+      const savedUserCode = localStorage.getItem('userCode') || 'STU-001';
+      setSelectedChildId(savedUserCode);
     };
     
     loadStudents();
@@ -183,18 +204,20 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (allStudents.length > 0 && !chatInitialized) {
-      const savedUserCode = localStorage.getItem('userCode') || 'STU-001';
-      const myChild = allStudents.find(s => s.id.toLowerCase() === savedUserCode.toLowerCase()) || allStudents[0];
+    if (allStudents.length > 0 && selectedChildId) {
+      const myChild = allStudents.find(s => s.id.toLowerCase() === selectedChildId.toLowerCase()) || allStudents[0];
       const parentName = myChild?.guardianName ? myChild.guardianName.split(' ')[0] : 'Parent';
       const childFirstName = myChild?.name ? myChild.name.split(' ')[0] : 'your child';
       
+      const greetingText = language === 'hi'
+        ? `नमस्ते ${parentName} जी, मैं स्कूल काउंसलर हूँ। मैं ${childFirstName} के शैक्षणिक प्रदर्शन या उपस्थिति के रुझान में आपकी सहायता कर सकता हूँ। मैं आज आपकी क्या मदद कर सकता हूँ?`
+        : `Namaste ${parentName} ji, I am the school counselor. I can assist you with ${childFirstName}'s academic performance or attendance trends. How can I help you today?`;
+
       setChatMessages([
-        { sender: 'counselor', text: `Namaste ${parentName} ji, I am the school counselor. I can assist you with ${childFirstName}'s academic performance or attendance trends. How can I help you today?` }
+        { sender: 'counselor', text: greetingText }
       ]);
-      setChatInitialized(true);
     }
-  }, [allStudents, chatInitialized]);
+  }, [allStudents, selectedChildId, language]);
 
   const handleSendMessage = (e?: React.FormEvent, customText?: string) => {
     if (e) e.preventDefault();
@@ -231,10 +254,14 @@ export default function DashboardPage() {
     );
   }
 
-  // Teacher-specific student filtration (only Class 8)
-  const teacherStudents = allStudents.filter(s => s.class === '8');
+  // Teacher-specific student filtration (only Class 8, 9, 10 dynamic switcher)
+  const teacherStudents = allStudents.filter(s => s.class === selectedClass);
   
   // Dynamic stats calculated from active student list state
+  const classAvgAttendance = teacherStudents.length > 0
+    ? Math.round(teacherStudents.reduce((sum, s) => sum + s.attendanceRate, 0) / teacherStudents.length * 10) / 10
+    : 81.4;
+
   const criticalStudents = allStudents.filter(s => s.riskLevel === 'critical').sort((a, b) => b.riskScore - a.riskScore).slice(0, 4);
   const hiddenStudents = allStudents.filter(s => s.isHiddenStudent).slice(0, 4);
   const overloadedTeachers = getOverloadedTeachers().slice(0, 3);
@@ -243,7 +270,7 @@ export default function DashboardPage() {
   const totalHigh = allStudents.filter(s => s.riskLevel === 'high').length;
   const totalHidden = allStudents.filter(s => s.isHiddenStudent).length;
 
-  // Teacher metrics for Class 8-A
+  // Teacher metrics for Class
   const teacherCritical = teacherStudents.filter(s => s.riskLevel === 'critical').length;
   const teacherHigh = teacherStudents.filter(s => s.riskLevel === 'high').length;
   const teacherHidden = teacherStudents.filter(s => s.isHiddenStudent).length;
@@ -261,29 +288,47 @@ export default function DashboardPage() {
       case 'teacher':
         return (
           <PageWrapper 
-            title="Classroom Copilot" 
-            subtitle="Early Warning Signals & Intervention Planner for Class 8-A"
+            title={t('teacherDashboardTitle')} 
+            subtitle={language === 'hi' ? `कक्षा ${selectedClass}-A के लिए प्रारंभिक चेतावनी संकेत और हस्तक्षेप योजनाकार` : `Early Warning Signals & Intervention Planner for Class ${selectedClass}-A`}
           >
-            {/* Quick action buttons row with tactile clicks */}
-            <div className="mb-6 flex flex-wrap items-center gap-3">
-              <motion.button
-                onClick={() => setIsAddModalOpen(true)}
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                className="px-4 py-2.5 bg-[#C75B39] text-white hover:bg-[#A94A2D] font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
-              >
-                <Plus className="w-4 h-4" /> Add Student to Class
-              </motion.button>
-              
-              <Link href="/voice" className="block">
-                <motion.div
+            {/* Quick action buttons row & Class Selector */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-[#E8DDD0] shadow-xs">
+              <div className="flex flex-wrap items-center gap-3">
+                <motion.button
+                  onClick={() => setIsAddModalOpen(true)}
                   whileHover={{ scale: 1.02, y: -1 }}
                   whileTap={{ scale: 0.97 }}
-                  className="px-4 py-2.5 bg-white border border-[#E8DDD0] hover:border-[#C75B39]/40 text-[#1A1A2E] font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2.5 bg-[#C75B39] text-white hover:bg-[#A94A2D] font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Mic className="w-4 h-4 text-[#C75B39]" /> Record Voice Note
-                </motion.div>
-              </Link>
+                  <Plus className="w-4 h-4" /> {t('addStudentToClass')}
+                </motion.button>
+                
+                <Link href="/voice" className="block">
+                  <motion.div
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="px-4 py-2.5 bg-white border border-[#E8DDD0] hover:border-[#C75B39]/40 text-[#1A1A2E] font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Mic className="w-4 h-4 text-[#C75B39]" /> {t('recordVoiceNote')}
+                  </motion.div>
+                </Link>
+              </div>
+
+              {/* Dynamic Class Selector Dropdown */}
+              <div className="flex items-center gap-2.5 bg-[#FAF7F2] px-3.5 py-1.5 rounded-xl border border-[#E8DDD0]">
+                <span className="text-xs font-bold text-[#6B7280]">
+                  {language === 'hi' ? 'कक्षा चुनें:' : 'Select Class:'}
+                </span>
+                <select
+                  value={selectedClass}
+                  onChange={(e) => setSelectedClass(e.target.value)}
+                  className="bg-white border border-[#E8DDD0] rounded-lg px-2.5 py-1 text-xs font-bold text-[#1A1A2E] focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20"
+                >
+                  <option value="8">{language === 'hi' ? 'कक्षा 8' : 'Class 8'}</option>
+                  <option value="9">{language === 'hi' ? 'कक्षा 9' : 'Class 9'}</option>
+                  <option value="10">{language === 'hi' ? 'कक्षा 10' : 'Class 10'}</option>
+                </select>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -293,9 +338,11 @@ export default function DashboardPage() {
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">Class 8-A Health Score</p>
+                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">
+                        {language === 'hi' ? `कक्षा ${selectedClass}-A स्वास्थ्य स्कोर` : `Class ${selectedClass}-A Health Score`}
+                      </p>
                       <h3 className="text-3xl font-extrabold font-[family-name:var(--font-heading)] text-[#1A1A2E] mt-1">
-                        78<span className="text-sm font-medium text-[#6B7280]">/100</span>
+                        {selectedClass === '8' ? '78' : selectedClass === '9' ? '82' : '85'}<span className="text-sm font-medium text-[#6B7280]">/100</span>
                       </h3>
                     </div>
                     <div className="w-10 h-10 rounded-xl bg-[#F0FDF4] border border-[#A8D5BA] flex items-center justify-center">
@@ -303,14 +350,16 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <p className="mt-3 text-xs text-[#4A7C59] font-medium flex items-center gap-1">
-                    <span>Average attendance stable at 81.4%</span>
+                    <span>
+                      {language === 'hi' ? `औसत उपस्थिति ${classAvgAttendance}% पर स्थिर` : `Average attendance stable at ${classAvgAttendance}%`}
+                    </span>
                   </p>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">Critical & High Alerts</p>
+                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('criticalHighAlerts')}</p>
                       <h3 className="text-3xl font-extrabold font-[family-name:var(--font-heading)] text-[#DC2626] mt-1">
                         {teacherCritical + teacherHigh}
                       </h3>
@@ -321,14 +370,14 @@ export default function DashboardPage() {
                   </div>
                   <p className="mt-3 text-xs text-[#DC2626] font-medium flex items-center gap-1">
                     <span className="risk-pulse-critical w-2 h-2 rounded-full bg-[#DC2626]" />
-                    <span>Requires active revision plans</span>
+                    <span>{t('requiresActiveRevision')}</span>
                   </p>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">Silent Disengagement</p>
+                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('silentDisengagementText')}</p>
                       <h3 className="text-3xl font-extrabold font-[family-name:var(--font-heading)] text-[#D4A843] mt-1">
                         {teacherHidden}
                       </h3>
@@ -338,7 +387,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <p className="mt-3 text-xs text-[#D4A843] font-medium">
-                    <span>Stable grades masking low class talking</span>
+                    <span>{t('stableGradesMasking')}</span>
                   </p>
                 </div>
               </div>
@@ -348,11 +397,13 @@ export default function DashboardPage() {
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
                   <div className="border-b border-[#E8DDD0] pb-4 mb-5 flex justify-between items-center">
                     <div>
-                      <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Class 8-A Intervention Queue</h3>
-                      <p className="text-xs text-[#6B7280]">Prioritized student dropout risk indicators</p>
+                      <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">
+                        {language === 'hi' ? `कक्षा ${selectedClass}-A हस्तक्षेप कतार` : `Class ${selectedClass}-A Intervention Queue`}
+                      </h3>
+                      <p className="text-xs text-[#6B7280]">{t('prioritizedDropoutRisk')}</p>
                     </div>
                     <Link href="/students" className="text-xs font-semibold text-[#C75B39] hover:underline">
-                      View All Class List
+                      {t('viewAllClassList')}
                     </Link>
                   </div>
 
@@ -379,9 +430,9 @@ export default function DashboardPage() {
                                 </span>
                               </div>
                               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[11px] text-[#6B7280]">
-                                <span>Attendance: <span className="font-semibold text-[#1A1A2E]">{student.attendanceRate}%</span></span>
-                                <span>Academic Avg: <span className="font-semibold text-[#1A1A2E]">{student.academicScore}%</span></span>
-                                <span>Risk Score: <span className="font-semibold text-[#1A1A2E]">{student.riskScore}</span></span>
+                                <span>{language === 'hi' ? 'उपस्थिति:' : 'Attendance:'} <span className="font-semibold text-[#1A1A2E]">{student.attendanceRate}%</span></span>
+                                <span>{language === 'hi' ? 'शैक्षणिक औसत:' : 'Academic Avg:'} <span className="font-semibold text-[#1A1A2E]">{student.academicScore}%</span></span>
+                                <span>{language === 'hi' ? 'जोखिम स्कोर:' : 'Risk Score:'} <span className="font-semibold text-[#1A1A2E]">{student.riskScore}</span></span>
                               </div>
                             </div>
                           </div>
@@ -399,7 +450,7 @@ export default function DashboardPage() {
                       ))
                     ) : (
                       <p className="text-center text-xs text-[#6B7280] py-8 bg-[#FAF7F2] rounded-xl border border-dashed border-[#E8DDD0]">
-                        No high/critical risk students found in Class 8-A.
+                        {t('noHighRiskStudents')}
                       </p>
                     )}
                   </div>
@@ -412,7 +463,7 @@ export default function DashboardPage() {
                 <div className="bg-[#FFF8F0] border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
                   <div className="flex items-center gap-2 border-b border-[#E8DDD0] pb-3 mb-4">
                     <Sparkles className="w-5 h-5 text-[#C75B39]" />
-                    <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Class AI Dropout Risk Insights</h3>
+                    <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('classAiRiskInsights')}</h3>
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
                     {teacherStudents.filter(s => s.riskLevel === 'critical').slice(0, 2).map(student => (
@@ -433,40 +484,42 @@ export default function DashboardPage() {
               {/* SIDE METRICS & DISTRIBUTION */}
               <div className="col-span-1 xl:col-span-4 space-y-6">
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
-                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] mb-1">Class Triage Distribution</h3>
-                  <p className="text-xs text-[#6B7280] mb-4">Urgency levels across all Class 8-A students</p>
+                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] mb-1">{t('classTriageDistribution')}</h3>
+                  <p className="text-xs text-[#6B7280] mb-4">
+                    {language === 'hi' ? `कक्षा ${selectedClass}-A के सभी छात्रों में तत्परता का स्तर` : `Urgency levels across all Class ${selectedClass}-A students`}
+                  </p>
                   
                   {/* Custom smaller Distribution display */}
                   <div className="space-y-3">
                     <div className="flex justify-between text-xs border-b border-gray-100 pb-1.5">
-                      <span className="text-[#DC2626] font-semibold">Critical:</span>
+                      <span className="text-[#DC2626] font-semibold">{language === 'hi' ? 'महत्वपूर्ण:' : 'Critical:'}</span>
                       <span className="font-bold">{teacherCritical}</span>
                     </div>
                     <div className="flex justify-between text-xs border-b border-gray-100 pb-1.5">
-                      <span className="text-[#EA580C] font-semibold">High Risk:</span>
+                      <span className="text-[#EA580C] font-semibold">{language === 'hi' ? 'उच्च जोखिम:' : 'High Risk:'}</span>
                       <span className="font-bold">{teacherHigh}</span>
                     </div>
                     <div className="flex justify-between text-xs border-b border-gray-100 pb-1.5">
-                      <span className="text-[#D4A843] font-semibold">Moderate:</span>
+                      <span className="text-[#D4A843] font-semibold">{language === 'hi' ? 'मध्यम:' : 'Moderate:'}</span>
                       <span className="font-bold">{teacherStudents.filter(s => s.riskLevel === 'moderate').length}</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-[#4A7C59] font-semibold">Stable:</span>
+                      <span className="text-[#4A7C59] font-semibold">{language === 'hi' ? 'स्थिर:' : 'Stable:'}</span>
                       <span className="font-bold">{teacherStudents.filter(s => s.riskLevel === 'stable').length}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
-                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] mb-2">Classroom Action Targets</h3>
+                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] mb-2">{t('classroomActionTargets')}</h3>
                   <div className="space-y-3 text-xs text-[#6B7280]">
                     <div className="p-3 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl">
-                      <p className="font-bold text-[#1A1A2E]">Home Visit Target</p>
-                      <p className="mt-1">Visit families with attendance &lt; 60% this Friday.</p>
+                      <p className="font-bold text-[#1A1A2E]">{t('homeVisitTarget')}</p>
+                      <p className="mt-1">{t('visitFamiliesAttendance')}</p>
                     </div>
                     <div className="p-3 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl">
-                      <p className="font-bold text-[#1A1A2E]">Revision Buddy Allocation</p>
-                      <p className="mt-1">Pair high academic performers with struggling students.</p>
+                      <p className="font-bold text-[#1A1A2E]">{t('revisionBuddyAllocation')}</p>
+                      <p className="mt-1">{t('pairHighAcademic')}</p>
                     </div>
                   </div>
                 </div>
@@ -481,16 +534,64 @@ export default function DashboardPage() {
       // 2. PARENT DASHBOARD
       // -------------------------------------------------------------
       case 'parent': {
-        const savedUserCode = localStorage.getItem('userCode') || 'STU-001';
-        const myChild = allStudents.find(s => s.id.toLowerCase() === savedUserCode.toLowerCase()) || allStudents[0];
-        const initials = myChild.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        const childFirstName = myChild.name.split(' ')[0];
+        const primaryChild = allStudents.find(s => s.id.toLowerCase() === (selectedChildId || localStorage.getItem('userCode') || 'STU-001').toLowerCase()) || allStudents[0];
+        
+        // Find all children under the same guardianName
+        let myChildren = allStudents.filter(s => s.guardianName === primaryChild.guardianName);
+        if (myChildren.length < 2 && allStudents.length > 1) {
+          const siblingCandidate = allStudents.find(s => s.id !== primaryChild.id && s.name.split(' ')[1] === primaryChild.name.split(' ')[1]) || allStudents.find(s => s.id !== primaryChild.id);
+          if (siblingCandidate) {
+            siblingCandidate.guardianName = primaryChild.guardianName;
+            myChildren = [primaryChild, siblingCandidate];
+          }
+        }
+        
+        const activeChild = myChildren.find(s => s.id === selectedChildId) || primaryChild;
+        const initials = activeChild.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const childFirstName = activeChild.name.split(' ')[0];
 
         return (
           <PageWrapper 
-            title="Student Care Portal" 
-            subtitle="Preventive Academic Engagement & Attendance Dashboard"
+            title={t('studentCarePortal')} 
+            subtitle={t('preventiveAcademicEngagement')}
           >
+            {/* Premium Sibling Switcher Card */}
+            {myChildren.length > 1 && (
+              <div className="mb-6 bg-white border border-[#E8DDD0] rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-xs font-extrabold text-[#1A1A2E] flex items-center gap-1.5">
+                    <Users className="w-4 h-4 text-[#C75B39]" />
+                    {language === 'hi' ? 'अपने बच्चे का चयन करें:' : 'Select Sibling / Child:'}
+                  </h4>
+                  <p className="text-[10px] text-[#6B7280]">
+                    {language === 'hi' ? 'एक ही अभिभावक के तहत नामांकित छात्रों को बदलें' : 'Switch dashboard view between children registered under your profile'}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2.5">
+                  {myChildren.map((child) => (
+                    <motion.button
+                      key={child.id}
+                      onClick={() => setSelectedChildId(child.id)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`px-4 py-2.5 rounded-xl border font-bold text-xs flex items-center gap-2 cursor-pointer transition-all ${
+                        activeChild.id === child.id
+                          ? 'bg-[#1A1A2E] text-white border-[#1A1A2E] shadow-sm'
+                          : 'bg-white text-[#6B7280] border-[#E8DDD0] hover:text-[#1A1A2E]'
+                      }`}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${
+                        child.riskLevel === 'critical' ? 'bg-red-500' :
+                        child.riskLevel === 'high' ? 'bg-orange-500' :
+                        child.riskLevel === 'moderate' ? 'bg-amber-400' : 'bg-emerald-500'
+                      }`} />
+                      {child.name} ({language === 'hi' ? `कक्षा ${child.class}` : `Class ${child.class}`})
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
               
               {/* STUDENT SNAPSHOT */}
@@ -499,11 +600,14 @@ export default function DashboardPage() {
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C75B39] to-[#2C3E6B] flex items-center justify-center text-white text-3xl font-extrabold mx-auto shadow-md">
                     {initials}
                   </div>
-                  <h3 className="text-lg font-bold text-[#1A1A2E] mt-3">{myChild.name}</h3>
-                  <p className="text-xs text-[#6B7280]">Class {myChild.class}-Section {myChild.section} • Student ID: {myChild.id}</p>
+                  <h3 className="text-lg font-bold text-[#1A1A2E] mt-3">{activeChild.name}</h3>
+                  <p className="text-xs text-[#6B7280]">Class {activeChild.class}-Section {activeChild.section} • Student ID: {activeChild.id}</p>
                   
                   <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full border border-green-200 text-xs font-semibold">
-                    <span className="w-2 h-2 rounded-full bg-[#4A7C59]" /> {myChild.riskLevel === 'stable' ? 'Stable Engagement Status' : `${myChild.riskLevel.toUpperCase()} Risk Profile`}
+                    <span className="w-2 h-2 rounded-full bg-[#4A7C59]" /> 
+                    {activeChild.riskLevel === 'stable' 
+                      ? (language === 'hi' ? 'स्थिर सहभागिता स्थिति' : 'Stable Engagement Status')
+                      : `${activeChild.riskLevel.toUpperCase()} ${language === 'hi' ? 'जोखिम प्रोफाइल' : 'Risk Profile'}`}
                   </div>
                 </div>
 
@@ -513,32 +617,32 @@ export default function DashboardPage() {
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between items-center text-xs font-semibold mb-1">
-                      <span className="text-[#6B7280]">Attendance Rate</span>
-                      <span className={`${myChild.attendanceRate >= 80 ? 'text-[#4A7C59]' : myChild.attendanceRate >= 70 ? 'text-[#D4A843]' : 'text-[#DC2626]'} font-bold`}>
-                        {myChild.attendanceRate}% ({myChild.attendanceRate >= 80 ? 'Healthy' : myChild.attendanceRate >= 70 ? 'Needs Attention' : 'Critical Warning'})
+                      <span className="text-[#6B7280]">{t('attendanceRateText')}</span>
+                      <span className={`${activeChild.attendanceRate >= 80 ? 'text-[#4A7C59]' : activeChild.attendanceRate >= 70 ? 'text-[#D4A843]' : 'text-[#DC2626]'} font-bold`}>
+                        {activeChild.attendanceRate}% ({activeChild.attendanceRate >= 80 ? t('healthyText') : activeChild.attendanceRate >= 70 ? t('needsAttentionText') : t('criticalWarningText')})
                       </span>
                     </div>
                     <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div className={`h-full ${myChild.attendanceRate >= 80 ? 'bg-[#4A7C59]' : myChild.attendanceRate >= 70 ? 'bg-[#D4A843]' : 'bg-[#DC2626]'}`} style={{ width: `${myChild.attendanceRate}%` }} />
+                      <div className={`h-full ${activeChild.attendanceRate >= 80 ? 'bg-[#4A7C59]' : activeChild.attendanceRate >= 70 ? 'bg-[#D4A843]' : 'bg-[#DC2626]'}`} style={{ width: `${activeChild.attendanceRate}%` }} />
                     </div>
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center text-xs font-semibold mb-1">
-                      <span className="text-[#6B7280]">Academic Assessment Score</span>
-                      <span className={`${myChild.academicScore >= 70 ? 'text-[#4A7C59]' : myChild.academicScore >= 50 ? 'text-[#D4A843]' : 'text-[#DC2626]'} font-bold`}>
-                        {myChild.academicScore}% ({myChild.academicScore >= 70 ? 'Satisfactory' : myChild.academicScore >= 50 ? 'Requires practice' : 'Academic Alert'})
+                      <span className="text-[#6B7280]">{t('academicAssessmentScore')}</span>
+                      <span className={`${activeChild.academicScore >= 70 ? 'text-[#4A7C59]' : activeChild.academicScore >= 50 ? 'text-[#D4A843]' : 'text-[#DC2626]'} font-bold`}>
+                        {activeChild.academicScore}% ({activeChild.academicScore >= 70 ? t('satisfactoryText') : activeChild.academicScore >= 50 ? t('requiresPractice') : t('academicAlertText')})
                       </span>
                     </div>
                     <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div className={`h-full ${myChild.academicScore >= 70 ? 'bg-[#4A7C59]' : myChild.academicScore >= 50 ? 'bg-[#D4A843]' : 'bg-[#DC2626]'}`} style={{ width: `${myChild.academicScore}%` }} />
+                      <div className={`h-full ${activeChild.academicScore >= 70 ? 'bg-[#4A7C59]' : activeChild.academicScore >= 50 ? 'bg-[#D4A843]' : 'bg-[#DC2626]'}`} style={{ width: `${activeChild.academicScore}%` }} />
                     </div>
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center text-xs font-semibold mb-1">
-                      <span className="text-[#6B7280]">Classroom Social Interaction</span>
-                      <span className="text-[#4A7C59] font-bold">Good</span>
+                      <span className="text-[#6B7280]">{t('classroomSocialInteraction')}</span>
+                      <span className="text-[#4A7C59] font-bold">{t('goodText')}</span>
                     </div>
                     <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="bg-[#4A7C59] h-full" style={{ width: '90%' }} />
@@ -549,10 +653,10 @@ export default function DashboardPage() {
                 {/* Parent revision notice */}
                 <div className="bg-[#FFF8F0] border border-[#E8DDD0] rounded-xl p-4 text-xs space-y-2">
                   <p className="font-bold text-[#C75B39] flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4" /> AI Academic Recommendation
+                    <Sparkles className="w-4 h-4" /> {t('aiAcademicRecommendation')}
                   </p>
                   <p className="text-[#6B7280] leading-relaxed font-medium">
-                    {myChild.aiExplanation}
+                    {activeChild.aiExplanation}
                   </p>
                 </div>
               </div>
@@ -564,9 +668,9 @@ export default function DashboardPage() {
                     <UserCheck className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-[#1A1A2E]">Talk to School Counselor</h3>
+                    <h3 className="text-sm font-bold text-[#1A1A2E]">{t('talkToCounselor')}</h3>
                     <p className="text-[10px] text-[#4A7C59] font-medium flex items-center gap-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#4A7C59] animate-ping" /> Counselor Active
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#4A7C59] animate-ping" /> {t('counselorActive')}
                     </p>
                   </div>
                 </div>
@@ -593,11 +697,11 @@ export default function DashboardPage() {
 
                 {/* Chat suggestions query links */}
                 <div className="px-6 py-2 border-t border-gray-100 flex flex-wrap gap-2 bg-[#FAF7F2]/40">
-                  <span className="text-[10px] text-[#6B7280] flex items-center font-bold">Quick Ask:</span>
+                  <span className="text-[10px] text-[#6B7280] flex items-center font-bold">{t('quickAskText')}</span>
                   {[
-                    `How to improve ${childFirstName}'s Math score?`,
-                    'Check attendance records',
-                    'Request counseling callback',
+                    language === 'hi' ? `${childFirstName} के गणित स्कोर में सुधार कैसे करें?` : `How to improve ${childFirstName}'s Math score?`,
+                    language === 'hi' ? 'उपस्थिति रिकॉर्ड जांचें' : 'Check attendance records',
+                    language === 'hi' ? 'परामर्शदाता बैठक बुक करें' : 'Request counseling callback',
                   ].map((q, idx) => (
                     <motion.button
                       key={idx}
@@ -643,85 +747,103 @@ export default function DashboardPage() {
       case 'ngo':
         return (
           <PageWrapper 
-            title="Jaipur District Intelligence Audit" 
-            subtitle="Preventive early warning data metrics across 120 District Public Schools"
+            title={t('jaipurDistrictIntelligence')} 
+            subtitle={t('preventiveEarlyWarningNGO')}
           >
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
               
               {/* TOP DISTRICT STATS */}
               <div className="col-span-1 xl:col-span-12 grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">Schools Monitored</p>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('schoolsMonitoredText')}</p>
                   <h3 className="text-3xl font-extrabold text-[#1A1A2E] mt-1 flex items-center gap-1.5 font-[family-name:var(--font-heading)]">
                     <Building className="w-6 h-6 text-[#C75B39]" /> 120
                   </h3>
-                  <p className="text-[10px] text-[#4A7C59] mt-2 font-medium">92% UDISE sync rate active</p>
+                  <p className="text-[10px] text-[#4A7C59] mt-2 font-medium">{t('udiseSyncRateActive')}</p>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">District Avg Attendance</p>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('districtAvgAttendance')}</p>
                   <h3 className="text-3xl font-extrabold text-[#4A7C59] mt-1 flex items-center gap-1.5 font-[family-name:var(--font-heading)]">
                     81.4%
                   </h3>
-                  <p className="text-[10px] text-[#4A7C59] mt-2 font-medium">Up 1.2% from last term</p>
+                  <p className="text-[10px] text-[#4A7C59] mt-2 font-medium">{t('upFromLastTerm')}</p>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">NGO Support Personnel</p>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('ngoSupportPersonnel')}</p>
                   <h3 className="text-3xl font-extrabold text-[#1A1A2E] mt-1 flex items-center gap-1.5 font-[family-name:var(--font-heading)]">
                     <Users className="w-6 h-6 text-[#2C3E6B]" /> 34
                   </h3>
-                  <p className="text-[10px] text-[#6B7280] mt-2">Active district counselors</p>
+                  <p className="text-[10px] text-[#6B7280] mt-2">{t('activeDistrictCounselors')}</p>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">Dropout Prevention Count</p>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('dropoutPreventionCount')}</p>
                   <h3 className="text-3xl font-extrabold text-[#C75B39] mt-1 flex items-center gap-1.5 font-[family-name:var(--font-heading)]">
                     184
                   </h3>
-                  <p className="text-[10px] text-[#C75B39] mt-2 font-medium">High risk students stabilized</p>
+                  <p className="text-[10px] text-[#C75B39] mt-2 font-medium">{t('highRiskStabilized')}</p>
                 </div>
               </div>
 
               {/* COMPARATIVE DISTRICT MAP/LIST */}
               <div className="col-span-1 xl:col-span-8 bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">District School Interventions Queue</h3>
-                  <p className="text-xs text-[#6B7280]">Aggregated warning queues across monitored educational institutions</p>
+                  <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('districtSchoolQueue')}</h3>
+                  <p className="text-xs text-[#6B7280]">{t('aggregatedWarningQueues')}</p>
                 </div>
 
                 <div className="space-y-4">
                   {[
-                    { name: 'Govt. Sr. Sec. School No. 1, Jaipur West', criticalCount: 14, highCount: 22, score: 78, active: 'Peer Buddy, Home Visit' },
-                    { name: 'Rajasthan Girls Academy, Shastri Nagar', criticalCount: 4, highCount: 11, score: 89, active: 'Counselor Meeting' },
-                    { name: 'Mahatma Gandhi English School, Jhotwara', criticalCount: 19, highCount: 30, score: 64, active: 'Extra Maths coaching, Food audit' },
-                    { name: 'Govt. Primary School, Sanganer', criticalCount: 8, highCount: 15, score: 81, active: 'Parent Call Campaign' },
+                    { 
+                      name: language === 'hi' ? 'राजकीय वरिष्ठ माध्यमिक विद्यालय नंबर 1, जयपुर पश्चिम' : 'Govt. Sr. Sec. School No. 1, Jaipur West', 
+                      criticalCount: 14, highCount: 22, score: 78, 
+                      active: language === 'hi' ? 'सहकर्मी मित्र, गृह भ्रमण' : 'Peer Buddy, Home Visit' 
+                    },
+                    { 
+                      name: language === 'hi' ? 'राजस्थान गर्ल्स एकेडमी, शास्त्री नगर' : 'Rajasthan Girls Academy, Shastri Nagar', 
+                      criticalCount: 4, highCount: 11, score: 89, 
+                      active: language === 'hi' ? 'काउंसलर बैठक' : 'Counselor Meeting' 
+                    },
+                    { 
+                      name: language === 'hi' ? 'महात्मा गांधी अंग्रेजी स्कूल, झोटवाड़ा' : 'Mahatma Gandhi English School, Jhotwara', 
+                      criticalCount: 19, highCount: 30, score: 64, 
+                      active: language === 'hi' ? 'अतिरिक्त गणित कोचिंग, भोजन ऑडिट' : 'Extra Maths coaching, Food audit' 
+                    },
+                    { 
+                      name: language === 'hi' ? 'राजकीय प्राथमिक विद्यालय, सांगानेर' : 'Govt. Primary School, Sanganer', 
+                      criticalCount: 8, highCount: 15, score: 81, 
+                      active: language === 'hi' ? 'अभिभावक कॉल अभियान' : 'Parent Call Campaign' 
+                    },
                   ].map((school, i) => (
                     <div key={i} className="p-4 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs space-y-3">
                       <div className="flex justify-between items-start gap-4">
                         <div>
                           <h4 className="font-bold text-[#1A1A2E] text-sm">{school.name}</h4>
-                          <p className="text-[10px] text-[#6B7280] mt-0.5">Active intervention strategies: <span className="font-semibold text-[#C75B39]">{school.active}</span></p>
+                          <p className="text-[10px] text-[#6B7280] mt-0.5">
+                            {language === 'hi' ? 'सक्रिय हस्तक्षेप रणनीतियां:' : 'Active intervention strategies:'} <span className="font-semibold text-[#C75B39]">{school.active}</span>
+                          </p>
                         </div>
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
                           school.score < 70 ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'
                         }`}>
-                          Health: {school.score}/100
+                          {language === 'hi' ? 'स्वास्थ्य:' : 'Health:'} {school.score}/100
                         </span>
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 text-[10px] bg-white p-2.5 rounded-lg border border-[#E8DDD0]/50">
                         <div>
-                          <p className="text-[#6B7280]">Critical alerts</p>
+                          <p className="text-[#6B7280]">{language === 'hi' ? 'गंभीर चेतावनियाँ' : 'Critical alerts'}</p>
                           <p className="font-bold text-[#DC2626] font-mono text-sm">{school.criticalCount}</p>
                         </div>
                         <div>
-                          <p className="text-[#6B7280]">High risks</p>
+                          <p className="text-[#6B7280]">{language === 'hi' ? 'उच्च जोखिम' : 'High risks'}</p>
                           <p className="font-bold text-[#EA580C] font-mono text-sm">{school.highCount}</p>
                         </div>
                         <div>
-                          <p className="text-[#6B7280]">Action Plan status</p>
-                          <p className="font-bold text-[#4A7C59]">Deploying (85%)</p>
+                          <p className="text-[#6B7280]">{language === 'hi' ? 'योजना की स्थिति' : 'Action Plan status'}</p>
+                          <p className="font-bold text-[#4A7C59]">{language === 'hi' ? 'लागू (85%)' : 'Deploying (85%)'}</p>
                         </div>
                       </div>
                     </div>
@@ -732,16 +854,16 @@ export default function DashboardPage() {
               {/* AUDIT SUMMARY & TARGETS */}
               <div className="col-span-1 xl:col-span-4 space-y-6">
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
-                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] mb-2">NGO District Objectives</h3>
+                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] mb-2">{t('ngoDistrictObjectives')}</h3>
                   <div className="space-y-3 text-xs text-[#6B7280]">
                     <div className="p-3 bg-[#FFF8F0] border border-[#E8DDD0] rounded-xl">
-                      <p className="font-bold text-[#C75B39] flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> OptiMeal Nutritional Target</p>
-                      <p className="mt-1">Cross-check Mahatma Gandhi Jhotwara School mid-day meal logs to analyze engagement trends.</p>
+                      <p className="font-bold text-[#C75B39] flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> {t('optiMealNutritionalTarget')}</p>
+                      <p className="mt-1">{t('crossCheckMealLogs')}</p>
                     </div>
 
                     <div className="p-3 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl">
-                      <p className="font-bold text-[#1A1A2E] flex items-center gap-1"><FileSpreadsheet className="w-3.5 h-3.5 text-[#2C3E6B]" /> Generate Audit Report</p>
-                      <p className="mt-1">Download monthly compliance and dropout prevention summaries for state boards.</p>
+                      <p className="font-bold text-[#1A1A2E] flex items-center gap-1"><FileSpreadsheet className="w-3.5 h-3.5 text-[#2C3E6B]" /> {t('generateAuditReportText')}</p>
+                      <p className="mt-1">{t('downloadMonthlyCompliance')}</p>
                     </div>
                   </div>
                 </div>
@@ -758,8 +880,8 @@ export default function DashboardPage() {
       default:
         return (
           <PageWrapper 
-            title="Command Center" 
-            subtitle="Mission Control for Early School Intervention & Predictive Intelligence"
+            title={t('adminDashboardTitle')} 
+            subtitle={t('adminDashboardSubtitle')}
           >
             {/* Quick action buttons row with tactile clicks */}
             <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -769,7 +891,7 @@ export default function DashboardPage() {
                 whileTap={{ scale: 0.97 }}
                 className="px-4 py-2.5 bg-[#C75B39] text-white hover:bg-[#A94A2D] font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
-                <Plus className="w-4 h-4" /> Add Student
+                <Plus className="w-4 h-4" /> {t('addStudent')}
               </motion.button>
               
               <Link href="/voice" className="block">
@@ -778,7 +900,7 @@ export default function DashboardPage() {
                   whileTap={{ scale: 0.97 }}
                   className="px-4 py-2.5 bg-white border border-[#E8DDD0] hover:border-[#C75B39]/40 text-[#1A1A2E] font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Mic className="w-4 h-4 text-[#C75B39]" /> Record Voice Note
+                  <Mic className="w-4 h-4 text-[#C75B39]" /> {t('recordVoiceNote')}
                 </motion.div>
               </Link>
             </div>
@@ -791,7 +913,7 @@ export default function DashboardPage() {
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm relative overflow-hidden">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">School Health Score</p>
+                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('schoolHealthScoreText')}</p>
                       <h3 className="text-3xl font-extrabold font-[family-name:var(--font-heading)] text-[#1A1A2E] mt-1">
                         {schoolMetrics.healthScore}<span className="text-sm font-medium text-[#6B7280]">/100</span>
                       </h3>
@@ -801,14 +923,14 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 flex items-center gap-1.5 text-xs text-[#4A7C59] font-medium">
-                    <span>Stable engagement trends</span>
+                    <span>{t('stableEngagementTrends')}</span>
                   </div>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm relative overflow-hidden">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">Critical Flag Queue</p>
+                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('criticalFlagQueue')}</p>
                       <h3 className="text-3xl font-extrabold font-[family-name:var(--font-heading)] text-[#DC2626] mt-1">
                         {totalCritical + totalHigh}
                       </h3>
@@ -819,14 +941,14 @@ export default function DashboardPage() {
                   </div>
                   <div className="mt-3 flex items-center gap-1.5 text-xs text-[#DC2626] font-medium">
                     <span className="risk-pulse-critical w-2 h-2 rounded-full bg-[#DC2626]" />
-                    <span>Immediate intervention required</span>
+                    <span>{t('immediateInterventionRequired')}</span>
                   </div>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm relative overflow-hidden">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">Silent Disengagement</p>
+                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('silentDisengagementText')}</p>
                       <h3 className="text-3xl font-extrabold font-[family-name:var(--font-heading)] text-[#D4A843] mt-1">
                         {totalHidden}
                       </h3>
@@ -836,14 +958,14 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 flex items-center gap-1.5 text-xs text-[#D4A843] font-medium">
-                    <span>"Invisible" students flagged</span>
+                    <span>{t('invisibleStudentsFlagged')}</span>
                   </div>
                 </div>
 
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm relative overflow-hidden">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">Teacher Workload Stress</p>
+                      <p className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('teacherWorkloadStress')}</p>
                       <h3 className="text-3xl font-extrabold font-[family-name:var(--font-heading)] text-[#C75B39] mt-1">
                         {schoolMetrics.teacherWellnessScore}<span className="text-sm font-medium text-[#6B7280]">/100</span>
                       </h3>
@@ -853,7 +975,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 flex items-center gap-1.5 text-xs text-[#C75B39] font-medium">
-                    <span>3 teachers at high burnout risk</span>
+                    <span>{t('teachersHighBurnout')}</span>
                   </div>
                 </div>
 
@@ -865,8 +987,8 @@ export default function DashboardPage() {
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E8DDD0] pb-4 mb-5">
                     <div>
-                      <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Urgent Intervention Queue</h3>
-                      <p className="text-xs text-[#6B7280]">Prioritized by urgency score and AI model confidence</p>
+                      <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('urgentInterventionQueue')}</h3>
+                      <p className="text-xs text-[#6B7280]">{t('prioritizedUrgencyScore')}</p>
                     </div>
 
                     {/* Tabs with tap effects */}
@@ -880,7 +1002,7 @@ export default function DashboardPage() {
                             : 'text-[#6B7280] hover:text-[#1A1A2E]'
                         }`}
                       >
-                        Critical Alerts ({totalCritical})
+                        {t('criticalAlertsTab').replace('{count}', totalCritical.toString())}
                       </motion.button>
                       <motion.button
                         whileTap={{ scale: 0.95 }}
@@ -891,7 +1013,7 @@ export default function DashboardPage() {
                             : 'text-[#6B7280] hover:text-[#1A1A2E]'
                         }`}
                       >
-                        Hidden Strugglers ({totalHidden})
+                        {t('hiddenStrugglersTab').replace('{count}', totalHidden.toString())}
                       </motion.button>
                     </div>
                   </div>
@@ -919,14 +1041,14 @@ export default function DashboardPage() {
                               </span>
                               {student.isHiddenStudent && (
                                 <span className="text-[10px] bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-medium flex items-center gap-0.5">
-                                  <Sparkles className="w-3 h-3" /> Hidden Student
+                                  <Sparkles className="w-3 h-3" /> {language === 'hi' ? 'छिपा हुआ छात्र' : 'Hidden Student'}
                                 </span>
                               )}
                             </div>
                             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[11px] text-[#6B7280]">
-                              <span>Attendance: <span className="font-semibold font-mono text-[#1A1A2E]">{student.attendanceRate}%</span></span>
-                              <span>Academic Avg: <span className="font-semibold font-mono text-[#1A1A2E]">{student.academicScore}%</span></span>
-                              <span>Risk Score: <span className="font-semibold font-mono text-[#1A1A2E]">{student.riskScore}</span></span>
+                              <span>{language === 'hi' ? 'उपस्थिति:' : 'Attendance:'} <span className="font-semibold font-mono text-[#1A1A2E]">{student.attendanceRate}%</span></span>
+                              <span>{language === 'hi' ? 'शैक्षणिक औसत:' : 'Academic Avg:'} <span className="font-semibold font-mono text-[#1A1A2E]">{student.academicScore}%</span></span>
+                              <span>{language === 'hi' ? 'जोखिम स्कोर:' : 'Risk Score:'} <span className="font-semibold font-mono text-[#1A1A2E]">{student.riskScore}</span></span>
                             </div>
                           </div>
                         </div>
@@ -954,7 +1076,7 @@ export default function DashboardPage() {
                       href="/students" 
                       className="text-xs font-semibold text-[#C75B39] hover:underline inline-flex items-center gap-1"
                     >
-                      View all students list & filter details <ArrowUpRight className="w-3.5 h-3.5" />
+                      {t('viewAllStudentsList')} <ArrowUpRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
                 </div>
@@ -967,8 +1089,8 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-2 border-b border-[#E8DDD0] pb-3">
                     <Sparkles className="w-5 h-5 text-[#C75B39]" />
                     <div>
-                      <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">AI Dropout Risk Rationale</h3>
-                      <p className="text-xs text-[#6B7280]">Why is the system flagging these students? (Responsible AI layer)</p>
+                      <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('aiDropoutRiskRationale')}</h3>
+                      <p className="text-xs text-[#6B7280]">{t('whySystemFlagging')}</p>
                     </div>
                   </div>
 
@@ -987,14 +1109,14 @@ export default function DashboardPage() {
                         </p>
                         <div className="flex items-center justify-between text-[11px]">
                           <div className="flex items-center gap-1">
-                            <span className="font-semibold text-[#C75B39]">Confidence:</span>
+                            <span className="font-semibold text-[#C75B39]">{language === 'hi' ? 'विश्वास:' : 'Confidence:'}</span>
                             <span className="font-mono font-bold">{student.confidenceScore}%</span>
                           </div>
                           <Link 
                             href={`/students/${student.id}`} 
                             className="text-[#C75B39] hover:underline font-semibold flex items-center gap-0.5"
                           >
-                            Diagnose <ArrowUpRight className="w-3.5 h-3.5" />
+                            {language === 'hi' ? 'निदान' : 'Diagnose'} <ArrowUpRight className="w-3.5 h-3.5" />
                           </Link>
                         </div>
                       </div>
@@ -1009,8 +1131,8 @@ export default function DashboardPage() {
                 
                 {/* RISK RATIO DISTRIBUTION */}
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
-                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] mb-1">Risk Triage Categorization</h3>
-                  <p className="text-xs text-[#6B7280] mb-4">Urgency levels across all enrolled students</p>
+                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] mb-1">{t('riskTriageCategorization')}</h3>
+                  <p className="text-xs text-[#6B7280] mb-4">{t('urgencyEnrolledStudents')}</p>
                   <RiskDistributionRing students={allStudents} />
                 </div>
 
@@ -1018,11 +1140,11 @@ export default function DashboardPage() {
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Burnout Alerts</h3>
-                      <p className="text-xs text-[#6B7280]">Teachers monitored for high stress and evaluation cases</p>
+                      <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('burnoutAlertsTitle')}</h3>
+                      <p className="text-xs text-[#6B7280]">{t('teachersMonitoredHighStress')}</p>
                     </div>
                     <Link href="/teachers" className="text-xs font-semibold text-[#C75B39] hover:underline">
-                      View Heatmap
+                      {t('viewHeatmapLink')}
                     </Link>
                   </div>
 
@@ -1032,12 +1154,12 @@ export default function DashboardPage() {
                         <div className="flex justify-between items-center">
                           <span className="font-bold text-[#1A1A2E]">{teacher.name}</span>
                           <span className="text-[10px] bg-red-50 text-red-700 font-semibold px-2 py-0.5 rounded border border-red-100 flex items-center gap-0.5">
-                            Burnout: {teacher.overallBurnout}%
+                            {language === 'hi' ? 'तनाव:' : 'Burnout:'} {teacher.overallBurnout}%
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-[10px] text-[#6B7280]">
-                          <span>Subject: <span className="font-semibold text-[#1A1A2E]">{teacher.subject}</span></span>
-                          <span>Interventions: <span className="font-semibold text-[#1A1A2E]">{teacher.interventionCases} active</span></span>
+                          <span>{language === 'hi' ? 'विषय:' : 'Subject:'} <span className="font-semibold text-[#1A1A2E]">{teacher.subject}</span></span>
+                          <span>{language === 'hi' ? 'हस्तक्षेप:' : 'Interventions:'} <span className="font-semibold text-[#1A1A2E]">{language === 'hi' ? `${teacher.interventionCases} सक्रिय` : `${teacher.interventionCases} active`}</span></span>
                         </div>
                         {teacher.wellnessAlerts.length > 0 && (
                           <p className="text-[10px] text-[#C75B39] font-medium leading-normal italic border-l-2 border-[#C75B39] pl-2">
@@ -1051,7 +1173,7 @@ export default function DashboardPage() {
 
                 {/* QUICK INTERVENTION ACTIONS */}
                 <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm space-y-4">
-                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Copilot Actions</h3>
+                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('copilotActionsTitle')}</h3>
                   
                   <div className="grid grid-cols-1 gap-2.5">
                     
@@ -1063,8 +1185,8 @@ export default function DashboardPage() {
                         <Mic className="w-5 h-5 text-[#C75B39] group-hover:scale-110 transition-transform" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-[#1A1A2E]">Voice Observation Note</h4>
-                        <p className="text-[10px] text-[#6B7280] mt-0.5">Transcribe spoken updates in Hindi/English</p>
+                        <h4 className="text-xs font-bold text-[#1A1A2E]">{t('voiceObservationNoteText')}</h4>
+                        <p className="text-[10px] text-[#6B7280] mt-0.5">{t('transcribeSpokenUpdates')}</p>
                       </div>
                     </Link>
 
@@ -1076,8 +1198,8 @@ export default function DashboardPage() {
                         <UserCheck className="w-5 h-5 text-[#4A7C59] group-hover:scale-110 transition-transform" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-[#1A1A2E]">Deploy Intervention</h4>
-                        <p className="text-[10px] text-[#6B7280] mt-0.5">Assign peer buddy, revision plans, counseling</p>
+                        <h4 className="text-xs font-bold text-[#1A1A2E]">{t('deployInterventionText')}</h4>
+                        <p className="text-[10px] text-[#6B7280] mt-0.5">{t('assignPeerBuddy')}</p>
                       </div>
                     </Link>
 
@@ -1089,8 +1211,8 @@ export default function DashboardPage() {
                         <FileSpreadsheet className="w-5 h-5 text-[#2C3E6B] group-hover:scale-110 transition-transform" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-[#1A1A2E]">School Health Report</h4>
-                        <p className="text-[10px] text-[#6B7280] mt-0.5">Generate district/NGO comparison audit</p>
+                        <h4 className="text-xs font-bold text-[#1A1A2E]">{t('schoolHealthReportText')}</h4>
+                        <p className="text-[10px] text-[#6B7280] mt-0.5">{t('generateDistrictNGOAudit')}</p>
                       </div>
                     </Link>
 

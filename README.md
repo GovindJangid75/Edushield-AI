@@ -79,8 +79,22 @@ Allows teachers to record observations naturally using voice notes (in mixed Hin
 </td>
 <td width="50%">
 
-### 🔍 Explainable AI (XAI)
-Ensures full transparency by providing clear, human-readable explanations (e.g., *“Attendance dropped 25% in 30 days”*) and suggesting practical, actionable interventions.
+### 🌐 Complete Bilingualism & Translation System
+Seamless instant dynamic translation between **English & Hindi** across all portals. Remembers and persists the user's language selection across logins and page refreshes.
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🧑‍🏫 Teacher Multi-Class Copilot
+Allows teachers who manage multiple classes to swap views dynamically (Class 8, 9, or 10) through an integrated dashboard selection, instantly refreshing all risk grids and classroom AI statistics.
+
+</td>
+<td width="50%">
+
+### 👨‍👩‍👦 Parent Sibling Switcher
+Enables parents with two or more children registered in the school to toggle dashboard statistics, AI academic reviews, progress meters, and counselor chats dynamically.
 
 </td>
 </tr>
@@ -93,8 +107,8 @@ Analyzes teacher workload metrics, intervention burdens, and high-risk classroom
 </td>
 <td width="50%">
 
-### 📊 Comprehensive Insights & Metrics
-Provides interactive dashboards presenting school health indices, risk distributions, grade-wise trends, and intervention efficacy charts.
+### 📶 Offline-First Operational Resilience
+Built for low-resource rural schools with unstable network structures. Displays an active offline notification banner, serves full-fidelity local-cached databases, and queues updates for automatic synchronization on connection restoration.
 
 </td>
 </tr>

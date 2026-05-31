@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from '../../lib/LanguageContext';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -28,6 +29,8 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [role, setRole] = useState<'admin' | 'teacher' | 'parent' | 'ngo'>('admin');
   const [mounted, setMounted] = useState(false);
+
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     setMounted(true);
@@ -78,35 +81,35 @@ export default function Sidebar() {
     switch (role) {
       case 'parent':
         return [
-          { href: '/dashboard', label: 'Ravi\'s Progress', icon: LayoutDashboard },
-          { href: '/students/STU-001', label: 'AI Risk Profile', icon: Users },
-          { href: '/interventions', label: 'Care Actions', icon: ClipboardList },
-          { href: '/voice', label: 'Counselor Notes', icon: Mic },
+          { href: '/dashboard', label: language === 'hi' ? 'रवि की प्रगति' : 'Ravi\'s Progress', icon: LayoutDashboard },
+          { href: '/students/STU-001', label: language === 'hi' ? 'एआई जोखिम प्रोफ़ाइल' : 'AI Risk Profile', icon: Users },
+          { href: '/interventions', label: language === 'hi' ? 'देखभाल कार्य' : 'Care Actions', icon: ClipboardList },
+          { href: '/voice', label: language === 'hi' ? 'परामर्शदाता नोट्स' : 'Counselor Notes', icon: Mic },
         ];
       case 'ngo':
         return [
-          { href: '/dashboard', label: 'District Audit', icon: LayoutDashboard },
-          { href: '/analytics', label: 'School Comparisons', icon: BarChart3 },
-          { href: '/teachers', label: 'Teacher Burnout Heatmap', icon: Heart },
+          { href: '/dashboard', label: language === 'hi' ? 'जिला ऑडिट' : 'District Audit', icon: LayoutDashboard },
+          { href: '/analytics', label: language === 'hi' ? 'स्कूल तुलना' : 'School Comparisons', icon: BarChart3 },
+          { href: '/teachers', label: language === 'hi' ? 'शिक्षक बर्नआउट हीटमैप' : 'Teacher Burnout Heatmap', icon: Heart },
         ];
       case 'teacher':
         return [
-          { href: '/dashboard', label: 'Classroom Copilot', icon: LayoutDashboard },
-          { href: '/students', label: 'Class 8-A Students', icon: Users },
-          { href: '/upload', label: 'Data Upload', icon: Upload },
-          { href: '/interventions', label: 'Interventions Log', icon: ClipboardList },
-          { href: '/voice', label: 'Voice Notes', icon: Mic },
+          { href: '/dashboard', label: language === 'hi' ? 'कक्षा सह-पायलट' : 'Classroom Copilot', icon: LayoutDashboard },
+          { href: '/students', label: language === 'hi' ? 'कक्षा 8-A के छात्र' : 'Class 8-A Students', icon: Users },
+          { href: '/upload', label: t('navUpload'), icon: Upload },
+          { href: '/interventions', label: language === 'hi' ? 'हस्तक्षेप लॉग' : 'Interventions Log', icon: ClipboardList },
+          { href: '/voice', label: language === 'hi' ? 'वॉयस नोट्स' : 'Voice Notes', icon: Mic },
         ];
       case 'admin':
       default:
         return [
-          { href: '/dashboard', label: 'Command Center', icon: LayoutDashboard },
-          { href: '/students', label: 'Student Intelligence', icon: Users },
-          { href: '/upload', label: 'Data Upload', icon: Upload },
-          { href: '/interventions', label: 'Interventions', icon: ClipboardList },
-          { href: '/teachers', label: 'Teacher Wellness', icon: Heart },
-          { href: '/analytics', label: 'School Analytics', icon: BarChart3 },
-          { href: '/voice', label: 'Voice Observations', icon: Mic },
+          { href: '/dashboard', label: language === 'hi' ? 'कमांड सेंटर' : 'Command Center', icon: LayoutDashboard },
+          { href: '/students', label: t('navStudents'), icon: Users },
+          { href: '/upload', label: t('navUpload'), icon: Upload },
+          { href: '/interventions', label: t('navInterventions'), icon: ClipboardList },
+          { href: '/teachers', label: t('navTeachers'), icon: Heart },
+          { href: '/analytics', label: t('navAnalytics'), icon: BarChart3 },
+          { href: '/voice', label: t('navVoice'), icon: Mic },
         ];
     }
   };
@@ -118,32 +121,32 @@ export default function Sidebar() {
     switch (role) {
       case 'teacher':
         return {
-          name: 'Meenakshi Sharma',
-          title: 'Class Teacher (8-A)',
-          school: 'Govt. Sr. Sec. School',
-          region: 'Class 8-A Lead • Jaipur',
+          name: language === 'hi' ? 'मीनाक्षी शर्मा' : 'Meenakshi Sharma',
+          title: language === 'hi' ? 'कक्षा शिक्षक (8-A)' : 'Class Teacher (8-A)',
+          school: language === 'hi' ? 'राजकीय उ. मा. विद्यालय' : 'Govt. Sr. Sec. School',
+          region: language === 'hi' ? 'कक्षा 8-A लीड • जयपुर' : 'Class 8-A Lead • Jaipur',
         };
       case 'parent':
         return {
-          name: 'Sunita Kumar',
-          title: 'Parent of Ravi Kumar',
-          school: 'Ravi Kumar (Class 8-A)',
-          region: 'Guardian Portal',
+          name: language === 'hi' ? 'सुनीता कुमार' : 'Sunita Kumar',
+          title: language === 'hi' ? 'रवि कुमार की माता' : 'Parent of Ravi Kumar',
+          school: language === 'hi' ? 'रवि कुमार (कक्षा 8-A)' : 'Ravi Kumar (Class 8-A)',
+          region: language === 'hi' ? 'अभिभावक पोर्टल' : 'Guardian Portal',
         };
       case 'ngo':
         return {
-          name: 'Jaipur Observer',
-          title: 'NGO Coordinator',
-          school: 'Jaipur Public Schools',
-          region: 'Monitored Region',
+          name: language === 'hi' ? 'जयपुर प्रेक्षक' : 'Jaipur Observer',
+          title: language === 'hi' ? 'एनजीओ समन्वयक' : 'NGO Coordinator',
+          school: language === 'hi' ? 'जयपुर पब्लिक स्कूल' : 'Jaipur Public Schools',
+          region: language === 'hi' ? 'निगरानी क्षेत्र' : 'Monitored Region',
         };
       case 'admin':
       default:
         return {
-          name: 'Admin User',
-          title: 'School Administrator',
-          school: 'Govt. Sr. Sec. School',
-          region: 'Rajasthan • Jaipur',
+          name: language === 'hi' ? 'एडमिन उपयोगकर्ता' : 'Admin User',
+          title: language === 'hi' ? 'स्कूल प्रशासक' : 'School Administrator',
+          school: language === 'hi' ? 'राजकीय उ. मा. विद्यालय' : 'Govt. Sr. Sec. School',
+          region: language === 'hi' ? 'राजस्थान • जयपुर' : 'Rajasthan • Jaipur',
         };
     }
   };
@@ -185,7 +188,7 @@ export default function Sidebar() {
                 transition={{ duration: 0.2 }}
               >
                 <h1 className="text-base font-bold font-[family-name:var(--font-heading)] tracking-tight">EduShield AI</h1>
-                <p className="text-[10px] text-white/50 leading-tight">Preventive Education Intelligence</p>
+                <p className="text-[10px] text-white/50 leading-tight">{t('brandTag')}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -281,7 +284,7 @@ export default function Sidebar() {
                   whileHover={{ scale: 1.1, rotate: 10 }}
                   whileTap={{ scale: 0.9 }}
                   className="text-white/30 hover:text-red-400 transition-colors cursor-pointer p-1 rounded hover:bg-white/5"
-                  title="Sign Out"
+                  title={t('navLogout')}
                 >
                   <LogOut className="w-4 h-4" />
                 </motion.button>

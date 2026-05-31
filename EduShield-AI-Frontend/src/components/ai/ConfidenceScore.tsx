@@ -6,13 +6,16 @@ interface ConfidenceScoreProps {
 }
 
 export default function ConfidenceScore({ score, size = 'md' }: ConfidenceScoreProps) {
+  const parsedScore = typeof score === 'number' ? score : parseFloat(score);
+  const validScore = isNaN(parsedScore) || parsedScore === undefined || parsedScore === null ? 80 : parsedScore;
+
   const getColors = (val: number) => {
     if (val >= 85) return { stroke: 'stroke-[#4A7C59]', text: 'text-[#4A7C59]', bg: 'bg-[#F0FDF4]' };
     if (val >= 70) return { stroke: 'stroke-[#D4A843]', text: 'text-[#D4A843]', bg: 'bg-[#FFFBEB]' };
     return { stroke: 'stroke-[#C75B39]', text: 'text-[#C75B39]', bg: 'bg-[#FFF8F0]' };
   };
 
-  const colors = getColors(score);
+  const colors = getColors(validScore);
   
   const dimensions = {
     sm: { radius: 14, strokeWidth: 2.5, sizeClass: 'w-8 h-8', textClass: 'text-[9px]' },
@@ -22,10 +25,10 @@ export default function ConfidenceScore({ score, size = 'md' }: ConfidenceScoreP
 
   const { radius, strokeWidth, sizeClass, textClass } = dimensions[size];
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (score / 100) * circumference;
+  const strokeDashoffset = circumference - (validScore / 100) * circumference;
 
   return (
-    <div className="flex items-center gap-2" title={`AI Confidence: ${score}%`}>
+    <div className="flex items-center gap-2" title={`AI Confidence: ${validScore}%`}>
       <div className={`relative flex items-center justify-center ${sizeClass}`}>
         <svg className="w-full h-full transform -rotate-90">
           {/* Background circle */}
@@ -51,7 +54,7 @@ export default function ConfidenceScore({ score, size = 'md' }: ConfidenceScoreP
           />
         </svg>
         <span className={`absolute font-mono font-bold ${colors.text} ${textClass}`}>
-          {Math.round(score)}%
+          {Math.round(validScore)}%
         </span>
       </div>
       {size !== 'sm' && (

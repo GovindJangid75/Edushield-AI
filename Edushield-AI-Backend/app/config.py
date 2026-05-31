@@ -4,7 +4,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str = "postgresql+psycopg://user:password@localhost:5432/edushield_ai"
+    DATABASE_URL: str = "sqlite:///./edushield_db.db"
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379"

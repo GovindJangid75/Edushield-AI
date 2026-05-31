@@ -14,17 +14,26 @@ from typing import Dict, List, Optional
 logger = logging.getLogger("edushield_ai.voice")
 
 
-def _get_openai_client():
-    """Return an openai.OpenAI client, or None if the key is missing."""
+def _get_ai_client():
+    """Return a tuple of (client, provider) where client is an openai.OpenAI client and provider is 'openai' or 'groq'."""
     try:
         import openai as _openai
         from app.config import get_settings
-        key = get_settings().OPENAI_API_KEY
-        if not key:
-            return None
-        return _openai.OpenAI(api_key=key)
+        settings = get_settings()
+        
+        # Check Groq first
+        groq_key = settings.GROQ_API_KEY
+        if groq_key and groq_key != "mock-key":
+            return _openai.OpenAI(api_key=groq_key, base_url="https://api.groq.com/openai/v1"), "groq"
+            
+        # Check OpenAI next
+        openai_key = settings.OPENAI_API_KEY
+        if openai_key and openai_key != "mock-key":
+            return _openai.OpenAI(api_key=openai_key), "openai"
+            
+        return None, None
     except Exception:
-        return None
+        return None, None
 
 
 class VoiceProcessor:
@@ -96,15 +105,17 @@ class VoiceProcessor:
         -------
         Full processed dict (same structure as process_text)
         """
-        client = _get_openai_client()
+        client, provider = _get_ai_client()
         transcribed_text = ''
         detected_language = language
 
         if client:
             try:
+                # Use whisper-large-v3 for Groq, whisper-1 for OpenAI
+                model_name = 'whisper-large-v3' if provider == 'groq' else 'whisper-1'
                 with open(audio_file_path, 'rb') as audio_file:
                     transcript = client.audio.transcriptions.create(
-                        model='whisper-1',
+                        model=model_name,
                         file=audio_file,
                         language=language if language != 'auto' else None,
                         response_format='verbose_json',
@@ -112,10 +123,10 @@ class VoiceProcessor:
                 transcribed_text   = transcript.text or ''
                 detected_language  = getattr(transcript, 'language', language)
             except Exception as exc:
-                logger.warning(f"Whisper transcription failed: {exc}")
+                logger.warning(f"Whisper transcription failed using {provider}: {exc}")
                 transcribed_text = ''
         else:
-            logger.info("OpenAI key not set — skipping Whisper transcription.")
+            logger.info("No AI keys set (OpenAI or Groq) — skipping Whisper transcription.")
 
         result = self.process_text(transcribed_text or '[Audio could not be transcribed]', language)
         result['language_detected'] = detected_language
@@ -178,13 +189,13 @@ class VoiceProcessor:
     # ── AI insight extraction ──────────────────────────────────────────
 
     def _extract_insights(self, text: str, language: str) -> Dict:
-        """Try GPT extraction; fall back to regex-based heuristics."""
-        client = _get_openai_client()
+        """Try LLM extraction; fall back to regex-based heuristics."""
+        client, provider = _get_ai_client()
         if client and text and '[Audio could not be transcribed]' not in text:
-            return self._gpt_extract(client, text, language)
+            return self._llm_extract(client, provider, text, language)
         return self._heuristic_extract(text)
 
-    def _gpt_extract(self, client, text: str, language: str) -> Dict:
+    def _llm_extract(self, client, provider: str, text: str, language: str) -> Dict:
         lang_label = 'Hindi/English (mixed)' if language == 'hi' else 'English'
         prompt = f"""You are an AI assistant helping Indian school teachers flag student concerns.
 
@@ -203,8 +214,10 @@ Extract the following in JSON (respond ONLY with valid JSON, no extra text):
   "language_of_concern": "english|hindi|mixed"
 }}"""
         try:
+            # Use llama-3.1-8b-instant for Groq, gpt-4o-mini for OpenAI
+            model_name = 'llama-3.1-8b-instant' if provider == 'groq' else 'gpt-4o-mini'
             response = client.chat.completions.create(
-                model='gpt-4o-mini',
+                model=model_name,
                 messages=[
                     {'role': 'system', 'content': 'Extract structured data from teacher observations. Always respond with valid JSON only.'},
                     {'role': 'user',   'content': prompt},
@@ -218,7 +231,7 @@ Extract the following in JSON (respond ONLY with valid JSON, no extra text):
             raw = re.sub(r'\s*```$', '', raw)
             return json.loads(raw)
         except Exception as exc:
-            logger.warning(f"GPT insight extraction failed: {exc}. Using heuristic fallback.")
+            logger.warning(f"{provider.upper()} insight extraction failed: {exc}. Using heuristic fallback.")
             return self._heuristic_extract(text)
 
     def _heuristic_extract(self, text: str) -> Dict:

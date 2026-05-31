@@ -69,6 +69,7 @@ Use this method to secure long-term database persistence and real-time syncing l
    | `SECRET_KEY` | `8cb2bbdc065e8a5dbcf50ad75b4819d45e54d4b1a43a088bd0c4e12e8b15d2fb` | Your encryption security token. |
    | `OPENAI_API_KEY` | `mock-key` *(or your real OpenAI key)* | Key to process vocal observations. |
    | `GEMINI_API_KEY` | `mock-key` *(or your real Gemini key)* | Fallback key for NLP summaries. |
+   | `GROQ_API_KEY` | `mock-key` *(or your real Groq key)* | **Alternative Key** to process vocal observations via high-speed Llama models. |
 
 5. Click **Deploy Web Service**.
    - Render will build the container, execute the command `alembic upgrade head` to configure the schemas, and spin up the uvicorn server.

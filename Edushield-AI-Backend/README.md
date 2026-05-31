@@ -11,7 +11,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
 [![Redis](https://img.shields.io/badge/Redis-7+-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docker.com)
+
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
@@ -37,7 +37,7 @@
 - [🧰 Tech Stack](#-tech-stack)
 - [📁 Project Structure](#-project-structure)
 - [🚀 Getting Started](#-getting-started)
-- [🐳 Docker Deployment](#-docker-deployment)
+
 - [🔐 Authentication](#-authentication)
 - [📌 API Endpoints](#-api-endpoints)
 - [🧪 Example Usage](#-example-usage)
@@ -212,7 +212,7 @@ Students are prioritised based on urgency — just like a hospital emergency roo
 | ✅ Validation | Pydantic | Schema validation |
 | 🤖 AI / ML | Scikit-learn + OpenAI APIs | Risk prediction & LLM |
 | 🎙️ Voice | OpenAI Whisper | Speech-to-text |
-| 🐳 Deployment | ![Docker](https://img.shields.io/badge/-Docker-2496ED?logo=docker&logoColor=white) | Containerised deployment |
+
 | 🧪 Testing | Pytest | Automated testing |
 
 ---
@@ -281,8 +281,7 @@ edushield-ai/
 ├── 📂 uploads/voice_observations/
 ├── 📂 logs/
 ├── 📂 models/
-├── 🐳 Dockerfile
-├── 🐳 docker-compose.yml
+
 ├── 📋 requirements.txt
 ├── ⚙️  alembic.ini
 ├── 🔒 .env.example
@@ -303,7 +302,7 @@ Make sure the following are installed before you begin:
 | 🗄️ PostgreSQL | 15+ | ✅ Yes |
 | ⚡ Redis | 7+ | ✅ Yes |
 | 🔧 Git | Any | ✅ Yes |
-| 🐳 Docker + Compose | Any | ⚪ Optional |
+
 | 🤖 OpenAI API Key | — | ⚪ Optional (voice/LLM features) |
 
 ---
@@ -396,8 +395,6 @@ alembic upgrade head
 # Local install
 redis-server
 
-# OR via Docker
-docker run -p 6379:6379 redis:7
 ```
 
 #### 9️⃣ Start the Server
@@ -414,28 +411,6 @@ uvicorn app.main:app --reload
 
 ---
 
-## 🐳 Docker Deployment
-
-Launch the full stack with a single command:
-
-```bash
-docker-compose up -d
-```
-
-This starts: **FastAPI backend** + **PostgreSQL** + **Redis**
-
-```bash
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-
-# Rebuild containers
-docker-compose up -d --build
-```
-
----
 
 ## 🔐 Authentication
 

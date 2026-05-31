@@ -62,7 +62,7 @@ We will deploy three primary components natively on Render:
    - **Name**: `edushield-frontend`
    - **Root Directory**: `EduShield-AI-Frontend`
    - **Runtime**: `Node`
-   - **Build Command**: `npm install && npm run build`
+   - **Build Command**: `npm install --include=dev && npm run build`
    - **Start Command**: `npm start`
    - **Instance Type**: `Free`
 4. Under **Environment Variables**, click **Add Environment Variable** and define:

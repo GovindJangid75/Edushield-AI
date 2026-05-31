@@ -38,6 +38,14 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
+    def __init__(self, **values):
+        super().__init__(**values)
+        # Automatically rewrite Render / production postgres schemas to use psycopg3 (postgresql+psycopg://)
+        if self.DATABASE_URL.startswith("postgres://"):
+            self.DATABASE_URL = self.DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+        elif self.DATABASE_URL.startswith("postgresql://") and not self.DATABASE_URL.startswith("postgresql+psycopg://"):
+            self.DATABASE_URL = self.DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
+
 @lru_cache()
 def get_settings():
     return Settings()

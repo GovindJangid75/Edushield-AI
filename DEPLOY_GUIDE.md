@@ -24,7 +24,9 @@ By using the `render.yaml` Blueprint in the root directory, you can deploy the d
    - **PostgreSQL Database** (`edushield-db`)
    - **Backend Web Service** (`edushield-backend` using Python native environment)
    - **Frontend Web Service** (`edushield-frontend` using Node native environment)
-4. Click **Apply Blueprint**. Render will automatically build and deploy all services and link the environment variables (`DATABASE_URL`, `NEXT_PUBLIC_API_URL`) securely.
+4. Click **Apply Blueprint**. Render will prompt you to enter any un-synced environment variables. 
+   - **Important**: For `NEXT_PUBLIC_API_URL`, you will need to paste the deployed URL of your backend service once it's created (e.g., `https://edushield-backend.onrender.com`).
+5. Render will automatically build and deploy all services securely.
 
 ---
 

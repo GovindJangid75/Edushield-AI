@@ -25,10 +25,7 @@ services:
     startCommand: npm start
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: edushield-backend
-          property: url
+        sync: false
 
 databases:
   - name: edushield-db

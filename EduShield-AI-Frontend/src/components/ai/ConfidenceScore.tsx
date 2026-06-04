@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/lib/LanguageContext';
 
 interface ConfidenceScoreProps {
   score: number;
@@ -6,6 +7,7 @@ interface ConfidenceScoreProps {
 }
 
 export default function ConfidenceScore({ score, size = 'md' }: ConfidenceScoreProps) {
+  const { t } = useTranslation();
   const parsedScore = typeof score === 'number' ? score : parseFloat(score);
   const validScore = isNaN(parsedScore) || parsedScore === undefined || parsedScore === null ? 80 : parsedScore;
 
@@ -28,7 +30,7 @@ export default function ConfidenceScore({ score, size = 'md' }: ConfidenceScoreP
   const strokeDashoffset = circumference - (validScore / 100) * circumference;
 
   return (
-    <div className="flex items-center gap-2" title={`AI Confidence: ${validScore}%`}>
+    <div className="flex items-center gap-2" title={`${t('aiConfidence')}: ${validScore}%`}>
       <div className={`relative flex items-center justify-center ${sizeClass}`}>
         <svg className="w-full h-full transform -rotate-90">
           {/* Background circle */}
@@ -59,8 +61,8 @@ export default function ConfidenceScore({ score, size = 'md' }: ConfidenceScoreP
       </div>
       {size !== 'sm' && (
         <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-wider text-[#6B7280] font-semibold">AI Confidence</span>
-          <span className="text-xs font-semibold text-[#1A1A2E]">High Precision</span>
+          <span className="text-[10px] uppercase tracking-wider text-[#6B7280] font-semibold">{t('aiConfidence')}</span>
+          <span className="text-xs font-semibold text-[#1A1A2E]">{t('highPrecision')}</span>
         </div>
       )}
     </div>

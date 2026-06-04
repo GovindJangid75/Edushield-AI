@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/lib/LanguageContext';
+import { tDynamic } from '@/lib/dynamicTranslations';
 
 function RiskHeatmapGrid({ students }: { students: Student[] }) {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -133,7 +134,7 @@ function RiskHeatmapGrid({ students }: { students: Student[] }) {
               </div>
 
               <p className="text-[10px] text-gray-500 leading-normal italic bg-slate-50 p-2.5 rounded border border-gray-100">
-                "{selectedStudent.aiExplanation}"
+                "{tDynamic(selectedStudent.aiExplanation, language)}"
               </p>
 
               <div className="flex items-center justify-between pt-1">
@@ -234,13 +235,23 @@ export default function DashboardPage() {
       const myChild = allStudents.find(s => s.id.toLowerCase() === savedUserCode.toLowerCase()) || allStudents[0];
       const childFirstName = myChild?.name ? myChild.name.split(' ')[0] : 'your child';
       
-      let reply = `Thank you for reaching out. We will schedule a personalized meeting with ${childFirstName}'s subject teachers.`;
-      if (textToSend.toLowerCase().includes('math')) {
-        reply = `Don't worry. We have allocated ${childFirstName} a revision buddy who scored 90% in maths. They will review problems together daily at school. We will also share extra practice worksheets in Hindi.`;
-      } else if (textToSend.toLowerCase().includes('attendance')) {
-        reply = `${childFirstName}'s attendance is currently ${myChild?.attendanceRate || 85}%, which is stable. However, if he needs to take a sick day, please inform us on this portal so his attendance record isn't marked as unnotified absence.`;
-      } else if (textToSend.toLowerCase().includes('meeting') || textToSend.toLowerCase().includes('call')) {
-        reply = `Sure! We can schedule a video/home counselor meeting this Saturday at 11 AM. Let me mark this in the teacher intervention log.`;
+      let reply = language === 'hi'
+        ? `संपर्क करने के लिए धन्यवाद। हम ${childFirstName} के विषय शिक्षकों के साथ एक व्यक्तिगत बैठक निर्धारित करेंगे।`
+        : `Thank you for reaching out. We will schedule a personalized meeting with ${childFirstName}'s subject teachers.`;
+      
+      const textLower = textToSend.toLowerCase();
+      if (textLower.includes('math') || textLower.includes('गणित')) {
+        reply = language === 'hi'
+          ? `चिंता न करें। हमने ${childFirstName} को एक रिवीजन बडी (सहपाठी) आवंटित किया है जिसने गणित में 90% अंक प्राप्त किए हैं। वे स्कूल में प्रतिदिन एक साथ समस्याओं की समीक्षा करेंगे। हम हिंदी में अतिरिक्त अभ्यास वर्कशीट भी साझा करेंगे।`
+          : `Don't worry. We have allocated ${childFirstName} a revision buddy who scored 90% in maths. They will review problems together daily at school. We will also share extra practice worksheets in Hindi.`;
+      } else if (textLower.includes('attendance') || textLower.includes('उपस्थिति') || textLower.includes('प्रेजेंट')) {
+        reply = language === 'hi'
+          ? `${childFirstName} की उपस्थिति वर्तमान में ${myChild?.attendanceRate || 85}% है, जो स्थिर है। हालांकि, यदि उसे बीमारी के कारण छुट्टी की आवश्यकता है, तो कृपया हमें इस पोर्टल पर सूचित करें ताकि उसकी उपस्थिति को बिना सूचना के अनुपस्थिति के रूप में चिह्नित न किया जाए।`
+          : `${childFirstName}'s attendance is currently ${myChild?.attendanceRate || 85}%, which is stable. However, if he needs to take a sick day, please inform us on this portal so his attendance record isn't marked as unnotified absence.`;
+      } else if (textLower.includes('meeting') || textLower.includes('call') || textLower.includes('बैठक') || textLower.includes('कॉल') || textLower.includes('बात')) {
+        reply = language === 'hi'
+          ? `ज़रूर! हम इस शनिवार को सुबह 11 बजे वीडियो/गृह परामर्श बैठक निर्धारित कर सकते हैं। मुझे इसे शिक्षक हस्तक्षेप लॉग में चिह्नित करने दें।`
+          : `Sure! We can schedule a video/home counselor meeting this Saturday at 11 AM. Let me mark this in the teacher intervention log.`;
       }
       setChatMessages(prev => [...prev, { sender: 'counselor' as const, text: reply }]);
     }, 800);
@@ -473,7 +484,7 @@ export default function DashboardPage() {
                           <RiskBadge level={student.riskLevel} />
                         </div>
                         <p className="text-[10px] text-[#6B7280] leading-relaxed bg-[#FAF7F2] p-2.5 rounded-lg">
-                          {student.aiExplanation}
+                          {tDynamic(student.aiExplanation, language)}
                         </p>
                       </div>
                     ))}
@@ -656,7 +667,7 @@ export default function DashboardPage() {
                     <Sparkles className="w-4 h-4" /> {t('aiAcademicRecommendation')}
                   </p>
                   <p className="text-[#6B7280] leading-relaxed font-medium">
-                    {activeChild.aiExplanation}
+                    {tDynamic(activeChild.aiExplanation, language)}
                   </p>
                 </div>
               </div>
@@ -721,7 +732,7 @@ export default function DashboardPage() {
                     type="text"
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Type message in Hindi or English..."
+                    placeholder={t('typeMessagePlaceholder')}
                     className="flex-grow px-4 py-2 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 text-[#1A1A2E]"
                   />
                   <motion.button
@@ -1105,7 +1116,7 @@ export default function DashboardPage() {
                           <RiskBadge level={student.riskLevel} />
                         </div>
                         <p className="text-[11px] text-[#6B7280] leading-relaxed bg-[#FAF7F2] p-2.5 rounded-lg border border-[#E8DDD0]/50 font-medium">
-                          {student.aiExplanation}
+                          {tDynamic(student.aiExplanation, language)}
                         </p>
                         <div className="flex items-center justify-between text-[11px]">
                           <div className="flex items-center gap-1">
@@ -1158,12 +1169,12 @@ export default function DashboardPage() {
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-[10px] text-[#6B7280]">
-                          <span>{language === 'hi' ? 'विषय:' : 'Subject:'} <span className="font-semibold text-[#1A1A2E]">{teacher.subject}</span></span>
+                          <span>{language === 'hi' ? 'विषय:' : 'Subject:'} <span className="font-semibold text-[#1A1A2E]">{tDynamic(teacher.subject, language)}</span></span>
                           <span>{language === 'hi' ? 'हस्तक्षेप:' : 'Interventions:'} <span className="font-semibold text-[#1A1A2E]">{language === 'hi' ? `${teacher.interventionCases} सक्रिय` : `${teacher.interventionCases} active`}</span></span>
                         </div>
                         {teacher.wellnessAlerts.length > 0 && (
                           <p className="text-[10px] text-[#C75B39] font-medium leading-normal italic border-l-2 border-[#C75B39] pl-2">
-                            {teacher.wellnessAlerts[0]}
+                            {tDynamic(teacher.wellnessAlerts[0], language)}
                           </p>
                         )}
                       </div>

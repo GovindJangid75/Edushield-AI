@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { api } from '@/lib/api';
+import { useTranslation } from '@/lib/LanguageContext';
+import { tDynamic } from '@/lib/dynamicTranslations';
 import { 
   UploadCloud, 
   FileText, 
@@ -21,6 +23,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function DataUploadPage() {
+  const { t, language } = useTranslation();
   const [activeTab, setActiveTab] = useState<'attendance' | 'assessments' | 'students'>('attendance');
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -69,7 +72,7 @@ export default function DataUploadPage() {
         setUploadStatus('idle');
       } else {
         setUploadStatus('error');
-        setStatusMessage('Invalid file type. Only CSV or Excel sheets are accepted.');
+        setStatusMessage(t('invalidFileType'));
       }
     }
   };
@@ -85,25 +88,25 @@ export default function DataUploadPage() {
     if (!file) return;
     try {
       setUploadStatus('loading');
-      setStatusMessage('Parsing spreadsheet columns & checking student matches...');
+      setStatusMessage(t('parsingSpreadsheet'));
       
       const result = await api.uploadFile(activeTab, file);
       
       if (result.success) {
         setUploadStatus('success');
         setUploadStats(result);
-        setStatusMessage(result.message || 'Data successfully imported to school database!');
+        setStatusMessage(result.message || t('dataImportedSuccess'));
         loadHistory();
         setFile(null);
       } else {
         setUploadStatus('error');
         setUploadStats(result);
-        setStatusMessage(result.message || 'Import completed with schema/formatting warnings.');
+        setStatusMessage(result.message || t('importWarnings'));
         loadHistory();
       }
     } catch (err: any) {
       setUploadStatus('error');
-      setStatusMessage(err.message || 'Server connection timed out. Please try again.');
+      setStatusMessage(err.message || t('serverTimeout'));
     }
   };
 
@@ -141,15 +144,15 @@ export default function DataUploadPage() {
 
   return (
     <PageWrapper
-      title="Data Integration Control"
-      subtitle="Fuzzy-match attendance spreadsheets, terminal report marks, and new student enrollments."
+      title={t('dataIntegrationTitle')}
+      subtitle={t('dataIntegrationSubtitle')}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Left 2 Columns: Tabs & Upload Area */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
-            <h3 className="text-lg font-bold text-[#1A1A2E] mb-4">Select Spreadsheet Template</h3>
+            <h3 className="text-lg font-bold text-[#1A1A2E] mb-4">{t('selectSpreadsheetTemplate')}</h3>
             
             {/* Tab buttons */}
             <div className="flex bg-[#FAF7F2] p-1.5 rounded-xl border border-[#E8DDD0] mb-6">
@@ -167,7 +170,7 @@ export default function DataUploadPage() {
                       : 'text-gray-500 hover:text-[#1A1A2E]'
                   }`}
                 >
-                  {tab} Template
+                  {t(`${tab}Template` as any)}
                 </button>
               ))}
             </div>
@@ -175,11 +178,11 @@ export default function DataUploadPage() {
             {/* Template instructions and downloads */}
             <div className="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8DDD0]/50 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-[#1A1A2E] capitalize">{activeTab} Template Layout</h4>
+                <h4 className="text-sm font-bold text-[#1A1A2E] capitalize">{t(`${activeTab}Template` as any)} {t('templateLayout')}</h4>
                 <p className="text-xs text-gray-500 max-w-md">
-                  {activeTab === 'attendance' && "Requires 'student_id', 'date', 'status' (present/absent), and optional 'reason'."}
-                  {activeTab === 'assessments' && "Requires 'student_id', 'subject', 'assessment_name', 'max_marks', and 'obtained_marks'."}
-                  {activeTab === 'students' && "Upload class roster: 'student_id', 'name', 'class', 'section', 'gender', and 'phone'."}
+                  {activeTab === 'attendance' && t('attendanceTemplateDesc')}
+                  {activeTab === 'assessments' && t('assessmentsTemplateDesc')}
+                  {activeTab === 'students' && t('studentsTemplateDesc')}
                 </p>
               </div>
               <a 
@@ -187,7 +190,7 @@ export default function DataUploadPage() {
                 download
                 className="flex items-center gap-2 bg-white text-gray-700 border border-[#E8DDD0] hover:border-[#C75B39] hover:text-[#C75B39] px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs"
               >
-                <Download className="w-4 h-4" /> Download Blank CSV
+                <Download className="w-4 h-4" /> {t('downloadBlankCsv')}
               </a>
             </div>
 
@@ -219,13 +222,13 @@ export default function DataUploadPage() {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-[#1A1A2E]">{file.name}</p>
-                    <p className="text-xs text-gray-400">{(file.size / 1024).toFixed(1)} KB • CSV Spreadsheet</p>
+                    <p className="text-xs text-gray-400">{(file.size / 1024).toFixed(1)} KB • {t('csvSpreadsheet')}</p>
                   </div>
                   <button 
                     onClick={() => setFile(null)} 
                     className="text-xs text-red-500 hover:text-red-700 underline font-semibold cursor-pointer"
                   >
-                    Remove File
+                    {t('removeFile')}
                   </button>
                 </div>
               ) : (
@@ -234,10 +237,10 @@ export default function DataUploadPage() {
                     <UploadCloud className="w-8 h-8" />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-bold text-[#1A1A2E]">Drag & Drop your school sheet here</p>
-                    <p className="text-xs text-gray-400">or <span className="text-[#C75B39] hover:underline font-bold">browse folders</span> to upload</p>
+                    <p className="text-sm font-bold text-[#1A1A2E]">{t('dragDropHere')}</p>
+                    <p className="text-xs text-gray-400">{t('orBrowse')} <span className="text-[#C75B39] hover:underline font-bold">{t('browseFolders')}</span> {t('toUpload')}</p>
                   </div>
-                  <p className="text-[10px] text-gray-300">Accepted formats: .csv, .xlsx, .xls (Max 10MB)</p>
+                  <p className="text-[10px] text-gray-300">{t('acceptedFormats')}</p>
                 </label>
               )}
             </div>
@@ -266,8 +269,8 @@ export default function DataUploadPage() {
                       <p className="font-semibold">{statusMessage}</p>
                       {uploadStats && (
                         <div className="text-xs space-y-1 opacity-90 mt-1">
-                          <p>✓ Processed: <strong>{uploadStats.rows_processed}</strong> records</p>
-                          {uploadStats.rows_failed > 0 && <p>⚠ Failed: <strong className="text-red-700">{uploadStats.rows_failed}</strong> rows</p>}
+                          <p>✓ {t('processed')} <strong>{uploadStats.rows_processed}</strong> {t('records')}</p>
+                          {uploadStats.rows_failed > 0 && <p>⚠ {t('failed')} <strong className="text-red-700">{uploadStats.rows_failed}</strong> {t('rows')}</p>}
                           {uploadStats.errors?.length > 0 && (
                             <ul className="list-disc pl-4 text-red-700/80 font-mono mt-1 space-y-0.5">
                               {uploadStats.errors.map((e: string, idx: number) => <li key={idx}>{e}</li>)}
@@ -289,7 +292,7 @@ export default function DataUploadPage() {
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                 }`}
               >
-                {uploadStatus === 'loading' ? 'Processing Database Transaction...' : 'Start Data Alignment'}
+                {uploadStatus === 'loading' ? t('processingTransaction') : t('startDataAlignment')}
               </button>
             </div>
           </div>
@@ -297,7 +300,7 @@ export default function DataUploadPage() {
           {/* Import History */}
           <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm">
             <h3 className="text-lg font-bold text-[#1A1A2E] mb-4 flex items-center gap-2">
-              <History className="w-5 h-5 text-[#C75B39]" /> Alignment Log & History
+              <History className="w-5 h-5 text-[#C75B39]" /> {t('alignmentLogHistory')}
             </h3>
 
             {historyLoading ? (
@@ -305,16 +308,16 @@ export default function DataUploadPage() {
                 <Loader2 className="w-6 h-6 text-[#C75B39] animate-spin" />
               </div>
             ) : history.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-6">No spreadsheet history found.</p>
+              <p className="text-sm text-gray-400 text-center py-6">{t('noHistoryFound')}</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left border-collapse min-w-[500px]">
                   <thead>
                     <tr className="bg-[#FAF7F2] text-gray-500 font-bold border-b border-[#E8DDD0]">
-                      <th className="px-3 py-2.5">File Name & Type</th>
-                      <th className="px-3 py-2.5 text-center">Row Counts</th>
-                      <th className="px-3 py-2.5 text-center">Status</th>
-                      <th className="px-3 py-2.5 text-right">Upload Date</th>
+                      <th className="px-3 py-2.5">{t('fileNameAndType')}</th>
+                      <th className="px-3 py-2.5 text-center">{t('rowCounts')}</th>
+                      <th className="px-3 py-2.5 text-center">{t('statusColumn')}</th>
+                      <th className="px-3 py-2.5 text-right">{t('uploadDate')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E8DDD0]/40">
@@ -323,16 +326,16 @@ export default function DataUploadPage() {
                         <td className="px-3 py-3">
                           <p className="font-bold text-[#1A1A2E]">{record.filename}</p>
                           <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
-                            {record.upload_type}
+                            {tDynamic(record.upload_type, language)}
                           </span>
                         </td>
                         <td className="px-3 py-3 text-center">
                           <div className="font-semibold text-[#1A1A2E]">
-                            {record.rows_processed} lines
+                            {record.rows_processed} {t('lines')}
                           </div>
                           {record.rows_failed > 0 && (
                             <div className="text-[10px] text-red-500">
-                              {record.rows_failed} errors
+                              {record.rows_failed} {t('errors')}
                             </div>
                           )}
                         </td>
@@ -342,7 +345,7 @@ export default function DataUploadPage() {
                               ? 'bg-green-50 text-green-700 border-green-200' 
                               : 'bg-red-50 text-red-700 border-red-200'
                           }`}>
-                            {record.status}
+                            {tDynamic(record.status, language)}
                           </span>
                         </td>
                         <td className="px-3 py-3 text-right text-gray-400">
@@ -372,13 +375,13 @@ export default function DataUploadPage() {
                 <Sparkles className="w-5 h-5 animate-pulse" />
               </div>
               <div>
-                <h3 className="font-bold text-base font-[family-name:var(--font-heading)]">Monday Morning Copilot</h3>
-                <p className="text-[10px] text-white/50">Early warning validation scenario</p>
+                <h3 className="font-bold text-base font-[family-name:var(--font-heading)]">{t('mondayMorningCopilot')}</h3>
+                <p className="text-[10px] text-white/50">{t('earlyWarningScenario')}</p>
               </div>
             </div>
 
             <p className="text-xs text-white/70 leading-relaxed mb-6">
-              Understand the core value of EduShield AI. Simulate how the headmistress uploads weekend logs, immediately generating dropout early alerts in under 6 seconds:
+              {t('mondayDescription')}
             </p>
 
             {simStep === 0 ? (
@@ -386,7 +389,7 @@ export default function DataUploadPage() {
                 onClick={runMondaySimulation}
                 className="w-full bg-[#C75B39] hover:bg-[#B34D2E] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
               >
-                Simulate Monday Morning Upload <ArrowRight className="w-4 h-4" />
+                {t('simulateMondayUpload')} <ArrowRight className="w-4 h-4" />
               </button>
             ) : (
               <div className="space-y-4">
@@ -400,11 +403,11 @@ export default function DataUploadPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-bold ${simStep >= 1 ? 'text-white' : 'text-white/40'}`}>
-                      Parsing raw `monday_log.csv` spreadsheet
+                      {t('parsingRawCsv')}
                     </p>
                     {simStep === 1 && (
                       <span className="text-[10px] text-[#D4A843] flex items-center gap-1 mt-0.5">
-                        <Loader2 className="w-3 h-3 animate-spin" /> Row fuzzy header mapping...
+                        <Loader2 className="w-3 h-3 animate-spin" /> {t('rowFuzzyMapping')}
                       </span>
                     )}
                   </div>
@@ -419,14 +422,14 @@ export default function DataUploadPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-bold ${simStep >= 2 ? 'text-white' : 'text-white/40'}`}>
-                      Syncing 32 student records
+                      {t('syncingRecords')}
                     </p>
                     {simStep === 2 && (
                       <span className="text-[10px] text-[#D4A843] flex items-center gap-1 mt-0.5">
-                        <Loader2 className="w-3 h-3 animate-spin" /> Batch inserting to SQLite database...
+                        <Loader2 className="w-3 h-3 animate-spin" /> {t('batchInserting')}
                       </span>
                     )}
-                    {simStep > 2 && <span className="text-[9px] text-[#4A7C59] font-bold">14 attendance, 18 assessments updated</span>}
+                    {simStep > 2 && <span className="text-[9px] text-[#4A7C59] font-bold">{t('attendanceAssessmentsUpdated')}</span>}
                   </div>
                 </div>
 
@@ -439,14 +442,14 @@ export default function DataUploadPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-bold ${simStep >= 3 ? 'text-white' : 'text-white/40'}`}>
-                      Running AI risk predictor engine
+                      {t('runningAiPredictor')}
                     </p>
                     {simStep === 3 && (
                       <span className="text-[10px] text-[#D4A843] flex items-center gap-1 mt-0.5">
-                        <Loader2 className="w-3 h-3 animate-spin" /> Re-evaluating dropout regression...
+                        <Loader2 className="w-3 h-3 animate-spin" /> {t('reEvaluatingDropout')}
                       </span>
                     )}
-                    {simStep > 3 && <span className="text-[9px] text-[#4A7C59] font-bold">Completed in 84ms!</span>}
+                    {simStep > 3 && <span className="text-[9px] text-[#4A7C59] font-bold">{t('completedInMs')}</span>}
                   </div>
                 </div>
 
@@ -459,22 +462,22 @@ export default function DataUploadPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-bold ${simStep >= 4 ? 'text-white' : 'text-white/40'}`}>
-                      Surfacing early intervention warning alerts
+                      {t('surfacingAlerts')}
                     </p>
                     {simStep === 4 && (
                       <span className="text-[10px] text-[#D4A843] flex items-center gap-1 mt-0.5">
-                        <Loader2 className="w-3 h-3 animate-spin" /> Generating push notifications...
+                        <Loader2 className="w-3 h-3 animate-spin" /> {t('generatingNotifications')}
                       </span>
                     )}
                     {simStep > 4 && (
                       <div className="bg-[#FFF8F0]/5 border border-white/10 p-2 rounded-lg mt-1.5 space-y-1.5">
                         <div className="flex gap-2 text-[10px] text-red-400 font-semibold items-center">
                           <ShieldAlert className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
-                          <span>STU-003 (Rajesh Kumar) flagged as Critical Risk!</span>
+                          <span>{language === 'hi' ? 'STU-003 (राजेश कुमार) को गंभीर जोखिम के रूप में चिह्नित किया गया!' : 'STU-003 (Rajesh Kumar) flagged as Critical Risk!'}</span>
                         </div>
                         <div className="flex gap-2 text-[10px] text-[#D4A843] font-semibold items-center">
                           <BellRing className="w-3.5 h-3.5 text-[#D4A843] flex-shrink-0" />
-                          <span>STU-005 (Sunita Meena) Home Visit escalated!</span>
+                          <span>{language === 'hi' ? 'STU-005 (सुनीता मीणा) गृह भ्रमण प्राथमिकता बढ़ाई गई!' : 'STU-005 (Sunita Meena) Home Visit escalated!'}</span>
                         </div>
                       </div>
                     )}
@@ -489,16 +492,16 @@ export default function DataUploadPage() {
                     className="p-3 bg-[#4A7C59]/10 border border-[#4A7C59]/30 rounded-xl mt-4"
                   >
                     <p className="text-xs font-semibold text-green-400 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" /> Simulation completed!
+                      <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" /> {t('simulationCompleted')}
                     </p>
                     <p className="text-[10px] text-white/60 mt-1">
-                      Check your header notification bell or Command Center. Newly predicted risk profiles are now visible.
+                      {t('checkHeaderNotification')}
                     </p>
                     <button 
                       onClick={resetSimulation}
                       className="text-[10px] text-gray-400 hover:text-white underline font-semibold mt-2 cursor-pointer"
                     >
-                      Reset Scenario
+                      {t('resetScenario')}
                     </button>
                   </motion.div>
                 )}
@@ -509,17 +512,17 @@ export default function DataUploadPage() {
 
           <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm space-y-4">
             <h4 className="text-sm font-bold text-[#1A1A2E] flex items-center gap-2">
-              <Database className="w-4.5 h-4.5 text-[#C75B39]" /> CSV Schema Requirements
+              <Database className="w-4.5 h-4.5 text-[#C75B39]" /> {t('csvSchemaRequirements')}
             </h4>
             <div className="space-y-3 text-[11px] text-gray-600">
               <div>
-                <p className="font-bold text-[#1A1A2E]">Student ID Matching</p>
-                <p>Ensure values in `student_id` are valid. If the student ID is not registered, the processor will skip that row to prevent database corruption.</p>
+                <p className="font-bold text-[#1A1A2E]">{t('studentIdMatching')}</p>
+                <p>{t('studentIdMatchingDesc')}</p>
               </div>
               <hr className="border-gray-100" />
               <div>
-                <p className="font-bold text-[#1A1A2E]">Date Formats</p>
-                <p>Dates must follow ISO 8601 formatting: `YYYY-MM-DD` (e.g. 2026-05-28) for flawless alignment with the SQLite backend system.</p>
+                <p className="font-bold text-[#1A1A2E]">{t('dateFormats')}</p>
+                <p>{t('dateFormatsDesc')}</p>
               </div>
             </div>
           </div>

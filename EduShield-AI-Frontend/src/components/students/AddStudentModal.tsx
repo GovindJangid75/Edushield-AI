@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, UserPlus, ShieldAlert, Sparkles } from 'lucide-react';
 import { getLocalStudents, saveLocalStudents, Student, StudentRiskFactor } from '@/lib/data/students';
 import { api } from '@/lib/api';
+import { useTranslation } from '@/lib/LanguageContext';
 
 interface AddStudentModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface AddStudentModalProps {
 }
 
 export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProps) {
+  const { t, language } = useTranslation();
   const [name, setName] = useState('');
   const [selectedClass, setSelectedClass] = useState('8');
   const [selectedSection, setSelectedSection] = useState('A');
@@ -165,8 +167,8 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                   <UserPlus className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Add New Student Profile</h3>
-                  <p className="text-[10px] text-[#6B7280]">AI will analyze grades and attendance to assign risk triage categories</p>
+                  <h3 className="text-base font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('addStudentProfileTitle')}</h3>
+                  <p className="text-[10px] text-[#6B7280]">{t('addStudentProfileDesc')}</p>
                 </div>
               </div>
               <motion.button
@@ -185,7 +187,7 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
               {/* Core Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Student Full Name</label>
+                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('studentFullName')}</label>
                   <input
                     type="text"
                     required
@@ -198,26 +200,26 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Class</label>
+                    <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('classField')}</label>
                     <select
                       value={selectedClass}
                       onChange={(e) => setSelectedClass(e.target.value)}
                       className="w-full px-3.5 py-2 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 text-[#1A1A2E]"
                     >
                       {['6', '7', '8', '9', '10'].map(c => (
-                        <option key={c} value={c}>Class {c}</option>
+                        <option key={c} value={c}>{t('classPrefix')} {c}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Section</label>
+                    <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('sectionField')}</label>
                     <select
                       value={selectedSection}
                       onChange={(e) => setSelectedSection(e.target.value)}
                       className="w-full px-3.5 py-2 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 text-[#1A1A2E]"
                     >
                       {['A', 'B', 'C'].map(s => (
-                        <option key={s} value={s}>Sec {s}</option>
+                        <option key={s} value={s}>{t('sectionField')} {s}</option>
                       ))}
                     </select>
                   </div>
@@ -227,7 +229,7 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
               {/* Age, Gender & Guardians */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Age</label>
+                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('ageField')}</label>
                   <input
                     type="number"
                     required
@@ -240,7 +242,7 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Gender</label>
+                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('genderField')}</label>
                   <div className="flex gap-2">
                     {(['M', 'F'] as const).map((g) => (
                       <button
@@ -253,14 +255,14 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                             : 'bg-[#FAF7F2] text-[#6B7280] border-[#E8DDD0] hover:bg-[#FFF8F0]'
                         }`}
                       >
-                        {g === 'M' ? 'Boy' : 'Girl'}
+                        {g === 'M' ? t('boyLabel') : t('girlLabel')}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Guardian Phone Number</label>
+                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('guardianPhoneField')}</label>
                   <input
                     type="tel"
                     required
@@ -273,7 +275,7 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Guardian Name</label>
+                <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('guardianNameField')}</label>
                 <input
                   type="text"
                   required
@@ -287,14 +289,14 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
               {/* Attendance & Academics (Critical signals!) */}
               <div className="bg-[#FFF8F0] border border-[#E8DDD0] rounded-xl p-4 space-y-4">
                 <h4 className="text-xs font-bold text-[#C75B39] flex items-center gap-1.5">
-                  <ShieldAlert className="w-4 h-4" /> Predictive Risk Modeling Inputs
+                  <ShieldAlert className="w-4 h-4" /> {t('predictiveRiskInputs')}
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-semibold text-[#1A1A2E]">Attendance Rate ({attendance}%)</label>
-                      {Number(attendance) < 70 && <span className="text-[9px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">Critical Level</span>}
+                      <label className="block text-xs font-semibold text-[#1A1A2E]">{t('attendanceRateField')} ({attendance}%)</label>
+                      {Number(attendance) < 70 && <span className="text-[9px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">{t('criticalLevel')}</span>}
                     </div>
                     <input
                       type="range"
@@ -304,13 +306,13 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                       onChange={(e) => setAttendance(e.target.value)}
                       className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#C75B39]"
                     />
-                    <span className="text-[10px] text-[#6B7280]">Critical signal if attendance falls below 70%</span>
+                    <span className="text-[10px] text-[#6B7280]">{t('criticalSignalNote')}</span>
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-semibold text-[#1A1A2E]">Academic Unit Average ({academics}%)</label>
-                      {Number(academics) < 50 && <span className="text-[9px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">Low Performance</span>}
+                      <label className="block text-xs font-semibold text-[#1A1A2E]">{t('academicUnitAvg')} ({academics}%)</label>
+                      {Number(academics) < 50 && <span className="text-[9px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">{t('lowPerformance')}</span>}
                     </div>
                     <input
                       type="range"
@@ -320,7 +322,7 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                       onChange={(e) => setAcademics(e.target.value)}
                       className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#C75B39]"
                     />
-                    <span className="text-[10px] text-[#6B7280]">Academic failure indicators model dropout risks</span>
+                    <span className="text-[10px] text-[#6B7280]">{t('academicFailureNote')}</span>
                   </div>
                 </div>
               </div>
@@ -333,7 +335,7 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                   whileTap={{ scale: 0.97 }}
                   className="px-4 py-2.5 border border-[#E8DDD0] hover:bg-[#FAF7F2] text-xs font-semibold rounded-xl text-[#6B7280] transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancelLabel')}
                 </motion.button>
                 <motion.button
                   type="submit"
@@ -345,11 +347,11 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                   {isLoading ? (
                     <>
                       <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Saving to AI Models...
+                      {t('savingToAi')}
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4" /> Deploy Student Profile
+                      <Sparkles className="w-4 h-4" /> {t('deployStudentProfile')}
                     </>
                   )}
                 </motion.button>

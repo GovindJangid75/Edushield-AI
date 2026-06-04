@@ -10,6 +10,8 @@ import ExplainableAI from '@/components/ai/ExplainableAI';
 import CustomSparkline from '@/components/charts/CustomSparkline';
 import { getStudentById, Student, students } from '@/lib/data/students';
 import { api } from '@/lib/api';
+import { useTranslation } from '@/lib/LanguageContext';
+import { tDynamic } from '@/lib/dynamicTranslations';
 import { interventionCatalog, InterventionCatalog } from '@/lib/data/school-metrics';
 import { 
   ArrowLeft, 
@@ -32,6 +34,7 @@ import {
 export default function StudentProfilePage() {
   const params = useParams();
   const router = useRouter();
+  const { t, language } = useTranslation();
   const studentId = params?.id as string;
 
   const [student, setStudent] = useState<Student | null>(null);
@@ -80,13 +83,13 @@ export default function StudentProfilePage() {
 
   if (!student) {
     return (
-      <PageWrapper title="Student Not Found">
+      <PageWrapper title={t('studentNotFound')}>
         <div className="bg-white border border-[#E8DDD0] rounded-2xl p-8 text-center max-w-md mx-auto my-12">
           <ShieldAlert className="w-12 h-12 text-[#C75B39] mx-auto mb-4" />
-          <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Student Record Missing</h3>
-          <p className="text-sm text-[#6B7280] mt-2 mb-6">The student ID {studentId} does not exist in our Preventive Education database.</p>
+          <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('studentNotFound')}</h3>
+          <p className="text-sm text-[#6B7280] mt-2 mb-6">ID: {studentId}</p>
           <Link href="/students" className="px-5 py-2.5 bg-[#1A1A2E] text-white text-xs font-semibold rounded-xl hover:bg-[#C75B39] transition-all">
-            Back to Student Queue
+            {t('backToStudents')}
           </Link>
         </div>
       </PageWrapper>
@@ -119,8 +122,8 @@ export default function StudentProfilePage() {
 
   return (
     <PageWrapper 
-      title={`${student.name} — Profile`} 
-      subtitle={`Student ID: ${student.id} • AI Risk Diagnosis & Case Workfile`}
+      title={`${student.name} — ${t('studentProfileTitle')}`} 
+      subtitle={`ID: ${student.id} • ${t('studentProfileSubtitle')}`}
     >
       <div className="space-y-6">
         
@@ -131,35 +134,35 @@ export default function StudentProfilePage() {
               href="/dashboard" 
               className="inline-flex items-center gap-1 text-xs font-semibold text-[#6B7280] hover:text-[#1A1A2E]"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Care Portal Dashboard
+              <ArrowLeft className="w-3.5 h-3.5" /> {t('backToCarePortal')}
             </Link>
           ) : (
             <Link 
               href="/students" 
               className="inline-flex items-center gap-1 text-xs font-semibold text-[#6B7280] hover:text-[#1A1A2E]"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Students Queue
+              <ArrowLeft className="w-3.5 h-3.5" /> {t('backToStudents')}
             </Link>
           )}
 
           {role === 'parent' ? (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-[#6B7280] font-medium">Principal Office Contact:</span>
+              <span className="text-xs text-[#6B7280] font-medium">{t('principalOfficeContact')}:</span>
               <a 
                 href="tel:+91 141 2740361" 
                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#F0FDF4] hover:bg-green-100/80 border border-[#A8D5BA] rounded-xl text-xs font-semibold text-[#4A7C59]"
               >
-                <Phone className="w-3.5 h-3.5" /> Call Office
+                <Phone className="w-3.5 h-3.5" /> {t('callOffice')}
               </a>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-[#6B7280] font-medium">Guardian: <span className="text-[#1A1A2E] font-bold">{student.guardianName}</span></span>
+              <span className="text-xs text-[#6B7280] font-medium">{t('guardianLabel')}: <span className="text-[#1A1A2E] font-bold">{student.guardianName}</span></span>
               <a 
                 href={`tel:${student.guardianPhone}`} 
                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#F0FDF4] hover:bg-green-100/80 border border-[#A8D5BA] rounded-xl text-xs font-semibold text-[#4A7C59]"
               >
-                <Phone className="w-3.5 h-3.5" /> Call: {student.guardianPhone}
+                <Phone className="w-3.5 h-3.5" /> {t('callOffice')}: {student.guardianPhone}
               </a>
             </div>
           )}
@@ -175,16 +178,16 @@ export default function StudentProfilePage() {
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-extrabold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{student.name}</h3>
                 <span className="text-xs bg-[#FAF7F2] border border-[#E8DDD0] px-2.5 py-0.5 rounded-lg text-[#6B7280] font-bold">
-                  Class {student.class}-{student.section}
+                  {t('classPrefix')} {student.class}-{student.section}
                 </span>
                 {student.isHiddenStudent && (
                   <span className="text-xs bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded-lg font-medium inline-flex items-center gap-0.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Hidden Struggler
+                    <Sparkles className="w-3.5 h-3.5" /> {t('hiddenLabel')}
                   </span>
                 )}
               </div>
               <p className="text-xs text-[#6B7280] mt-1 font-medium">
-                Age {student.age} • Enrolled {new Date(student.enrollmentDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' })}
+                {t('ageLabel')} {student.age} {t('yearsOld')} • {t('enrolledLabel')} {new Date(student.enrollmentDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' })}
               </p>
             </div>
           </div>
@@ -193,7 +196,7 @@ export default function StudentProfilePage() {
             <ConfidenceScore score={student.confidenceScore} />
             <div className="h-8 w-px bg-[#E8DDD0] hidden sm:block" />
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">AI Urgency Score</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#6B7280]">{t('urgencyTriage')}</span>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-lg font-mono font-extrabold text-[#1A1A2E]">{student.riskScore}</span>
                 <RiskBadge level={student.riskLevel} />
@@ -210,7 +213,7 @@ export default function StudentProfilePage() {
             
             {/* PERFORMANCE & ENGAGEMENT WAVES */}
             <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm space-y-6">
-              <h4 className="font-bold text-base text-[#1A1A2E] font-[family-name:var(--font-heading)]">Engagement Waves & Historical Trends</h4>
+              <h4 className="font-bold text-base text-[#1A1A2E] font-[family-name:var(--font-heading)]">{t('trendAnalysis')}</h4>
               
               <div className="grid md:grid-cols-2 gap-6">
                 
@@ -218,10 +221,10 @@ export default function StudentProfilePage() {
                 <div className="space-y-3 p-4 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl">
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="text-xs font-semibold text-[#6B7280]">Attendance History</p>
+                      <p className="text-xs font-semibold text-[#6B7280]">{t('attendanceTrend')}</p>
                       <h5 className="text-xl font-mono font-bold text-[#1A1A2E]">{student.attendanceRate}%</h5>
                     </div>
-                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-white border border-[#E8DDD0] rounded text-[#6B7280]">12-Week Wave</span>
+                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-white border border-[#E8DDD0] rounded text-[#6B7280]">{t('weeksWave')}</span>
                   </div>
                   <CustomSparkline data={student.attendanceTrend} color="#C75B39" height={70} width={280} />
                 </div>
@@ -230,10 +233,10 @@ export default function StudentProfilePage() {
                 <div className="space-y-3 p-4 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl">
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="text-xs font-semibold text-[#6B7280]">Academic Index</p>
+                      <p className="text-xs font-semibold text-[#6B7280]">{t('academicTrend')}</p>
                       <h5 className="text-xl font-mono font-bold text-[#1A1A2E]">{student.academicScore}%</h5>
                     </div>
-                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-white border border-[#E8DDD0] rounded text-[#6B7280]">6 Assessments</span>
+                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-white border border-[#E8DDD0] rounded text-[#6B7280]">{t('assessmentsCount')}</span>
                   </div>
                   <CustomSparkline data={student.academicTrend} color="#2C3E6B" height={70} width={280} />
                 </div>
@@ -242,12 +245,12 @@ export default function StudentProfilePage() {
 
               {/* 5 Indicator Meters */}
               <div className="space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">Primary Behavioral & Academic Signals</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">{t('riskFactorsTitle')}</p>
                 <div className="grid sm:grid-cols-3 gap-3">
                   
                   <div className="p-3 bg-white border border-[#E8DDD0] rounded-xl space-y-1.5">
                     <div className="flex justify-between text-xs font-medium text-[#6B7280]">
-                      <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" /> Homework</span>
+                      <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" /> {t('homeworkLabel')}</span>
                       <span className="font-mono font-bold text-[#1A1A2E]">{student.homeworkConsistency}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -257,7 +260,7 @@ export default function StudentProfilePage() {
 
                   <div className="p-3 bg-white border border-[#E8DDD0] rounded-xl space-y-1.5">
                     <div className="flex justify-between text-xs font-medium text-[#6B7280]">
-                      <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> Participation</span>
+                      <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {t('participationLabel')}</span>
                       <span className="font-mono font-bold text-[#1A1A2E]">{student.participationScore}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -267,7 +270,7 @@ export default function StudentProfilePage() {
 
                   <div className="p-3 bg-white border border-[#E8DDD0] rounded-xl space-y-1.5">
                     <div className="flex justify-between text-xs font-medium text-[#6B7280]">
-                      <span className="flex items-center gap-1"><Smile className="w-3.5 h-3.5" /> Wellbeing</span>
+                      <span className="flex items-center gap-1"><Smile className="w-3.5 h-3.5" /> {t('emotionalLabel')}</span>
                       <span className="font-mono font-bold text-[#1A1A2E]">{student.emotionalWellbeing}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -283,10 +286,10 @@ export default function StudentProfilePage() {
             {/* INTERVENTION WORK HISTORY */}
             <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-sm space-y-4">
               <div className="flex justify-between items-center border-b border-[#E8DDD0] pb-3">
-                <h4 className="font-bold text-base text-[#1A1A2E] font-[family-name:var(--font-heading)]">Intervention Registry & Tasks</h4>
+                <h4 className="font-bold text-base text-[#1A1A2E] font-[family-name:var(--font-heading)]">{t('interventionHistoryTitle')}</h4>
                 {role !== 'parent' && (
                   <Link href={`/interventions?student=${student.id}`} className="px-3 py-1.5 bg-[#FAF7F2] border border-[#E8DDD0] hover:border-[#C75B39]/40 rounded-xl text-xs font-bold text-[#C75B39] transition-all flex items-center gap-1">
-                    <Plus className="w-3.5 h-3.5" /> New Workplan
+                    <Plus className="w-3.5 h-3.5" /> {t('newIntervention')}
                   </Link>
                 )}
               </div>
@@ -307,27 +310,27 @@ export default function StudentProfilePage() {
                             <span className="text-[10px] font-mono bg-white border border-[#E8DDD0] px-2 py-0.5 rounded text-[#6B7280]">
                               {item.id}
                             </span>
-                            <h5 className="font-bold text-sm text-[#1A1A2E] mt-1">{item.type}</h5>
+                            <h5 className="font-bold text-sm text-[#1A1A2E] mt-1">{tDynamic(item.type, language)}</h5>
                           </div>
                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
                             item.status === 'resolved' ? 'bg-green-50 border-green-200 text-[#4A7C59]' :
                             item.status === 'in-progress' ? 'bg-amber-50 border-amber-200 text-[#D4A843]' : 'bg-red-50 border-red-200 text-[#C75B39]'
                           }`}>
-                            {item.status}
+                            {tDynamic(item.status, language)}
                           </span>
                         </div>
-                        <p className="text-xs text-[#6B7280]">{item.description}</p>
+                        <p className="text-xs text-[#6B7280]">{tDynamic(item.description, language)}</p>
                         
                         <div className="flex justify-between items-center text-[10px] text-[#9CA3AF] border-t border-[#E8DDD0]/50 pt-2 mt-1">
-                          <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Assigned: {new Date(item.dateAssigned).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
-                          <span>By: {item.assignedTo}</span>
+                          <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {t('dateAssigned')}: {new Date(item.dateAssigned).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                          <span>{t('assignedToLabel')}: {tDynamic(item.assignedTo, language)}</span>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-[#6B7280] text-center py-6">No previous interventions cataloged for this student profile.</p>
+                <p className="text-xs text-[#6B7280] text-center py-6">{t('noInterventions')}</p>
               )}
 
             </div>
@@ -342,24 +345,24 @@ export default function StudentProfilePage() {
 
             {/* COPILOT SUGGESTED ACTIONS */}
             <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm space-y-4">
-              <h4 className="font-bold text-sm text-[#1A1A2E] font-[family-name:var(--font-heading)] uppercase tracking-wider">AI Suggested Interventions</h4>
+              <h4 className="font-bold text-sm text-[#1A1A2E] font-[family-name:var(--font-heading)] uppercase tracking-wider">{t('recomendedAction')}</h4>
               
               <div className="space-y-3">
                 {recommendedActions.map((action) => (
                   <div key={action.id} className="p-3 bg-[#FAF7F2] hover:bg-[#FFF8F0] border border-[#E8DDD0] rounded-xl text-xs space-y-2 transition-all">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-[#1A1A2E]">{action.type}</span>
+                      <span className="font-bold text-[#1A1A2E]">{tDynamic(action.type, language)}</span>
                       <span className={`text-[9px] font-semibold px-2 py-0.5 rounded capitalize ${
                         action.priority === 'urgent' ? 'bg-red-50 text-red-700' :
                         action.priority === 'high' ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'
                       }`}>
-                        {action.priority}
+                        {tDynamic(action.priority, language)}
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#6B7280] leading-relaxed">{action.description}</p>
+                    <p className="text-[11px] text-[#6B7280] leading-relaxed">{tDynamic(action.description, language)}</p>
                     <div className="flex justify-between items-center text-[10px] text-[#9CA3AF] pt-1">
-                      <span>Time: {action.estimatedDuration}</span>
-                      <span>Assignee: {action.responsibleRole}</span>
+                      <span>{t('timeLabel')} {tDynamic(action.estimatedDuration, language)}</span>
+                      <span>{t('assigneeLabel')} {tDynamic(action.responsibleRole, language)}</span>
                     </div>
                   </div>
                 ))}
@@ -368,14 +371,14 @@ export default function StudentProfilePage() {
 
             {/* TEACHER OBSERVATIONS LOG */}
             <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm space-y-4">
-              <h4 className="font-bold text-sm text-[#1A1A2E] font-[family-name:var(--font-heading)] uppercase tracking-wider">Teacher Observations</h4>
+              <h4 className="font-bold text-sm text-[#1A1A2E] font-[family-name:var(--font-heading)] uppercase tracking-wider">{t('observationHistoryTitle')}</h4>
               
               {/* Form */}
               <form onSubmit={handleAddNote} className="space-y-3">
                 <textarea
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
-                  placeholder="Record an observation note (e.g. absent trend on Friday, sitting alone during lunch...)"
+                  placeholder={t('observationPlaceholder')}
                   className="w-full min-h-[70px] p-2.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 transition-all text-[#1A1A2E] placeholder:text-[#9CA3AF]"
                   required
                 />
@@ -386,10 +389,10 @@ export default function StudentProfilePage() {
                     onChange={(e) => setNoteType(e.target.value as any)}
                     className="bg-[#FAF7F2] border border-[#E8DDD0] px-2 py-1.5 rounded-lg text-[10px] font-bold focus:outline-none text-[#1A1A2E]"
                   >
-                    <option value="academic">Academic Note</option>
-                    <option value="emotional">Emotional Note</option>
-                    <option value="behavioral">Behavioral Note</option>
-                    <option value="positive">Positive Note</option>
+                    <option value="academic">{t('academicNote')}</option>
+                    <option value="emotional">{t('emotionalNote')}</option>
+                    <option value="behavioral">{t('behavioralNote')}</option>
+                    <option value="positive">{t('positiveNote')}</option>
                   </select>
 
                   <button
@@ -398,7 +401,7 @@ export default function StudentProfilePage() {
                     className="px-3.5 py-1.5 bg-[#1A1A2E] text-white hover:bg-[#C75B39] disabled:bg-gray-400 text-xs font-semibold rounded-lg transition-all flex items-center gap-1 cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" /> 
-                    {isSavingNote ? 'Saving...' : 'Add Log'}
+                    {isSavingNote ? t('saving') : t('addLog')}
                   </button>
                 </div>
               </form>
@@ -408,16 +411,16 @@ export default function StudentProfilePage() {
                 {student.observations.map((obs) => (
                   <div key={obs.id} className="p-3 bg-[#FAF7F2] border border-[#E8DDD0]/50 rounded-xl text-xs space-y-1.5">
                     <div className="flex justify-between items-center text-[10px]">
-                      <span className="font-bold text-[#1A1A2E]">{obs.teacherName}</span>
+                      <span className="font-bold text-[#1A1A2E]">{tDynamic(obs.teacherName, language)}</span>
                       <span className="text-[#9CA3AF] font-mono">{new Date(obs.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
                     </div>
-                    <p className="text-[#6B7280] leading-snug">{obs.note}</p>
+                    <p className="text-[#6B7280] leading-snug">{tDynamic(obs.note, language)}</p>
                     <span className={`inline-block text-[9px] font-bold px-1.5 py-0.5 rounded capitalize ${
                       obs.type === 'academic' ? 'bg-blue-50 text-blue-700' :
                       obs.type === 'emotional' ? 'bg-purple-50 text-purple-700' :
                       obs.type === 'positive' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
                     }`}>
-                      {obs.type}
+                      {tDynamic(obs.type, language)}
                     </span>
                   </div>
                 ))}

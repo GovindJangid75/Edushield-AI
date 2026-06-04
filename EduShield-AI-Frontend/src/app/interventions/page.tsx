@@ -7,6 +7,8 @@ import PageWrapper from '@/components/layout/PageWrapper';
 import RiskBadge from '@/components/ai/RiskBadge';
 import { students, Student, Intervention } from '@/lib/data/students';
 import { interventionCatalog } from '@/lib/data/school-metrics';
+import { useTranslation } from '@/lib/LanguageContext';
+import { tDynamic } from '@/lib/dynamicTranslations';
 import { 
   ClipboardList, 
   Search, 
@@ -26,6 +28,7 @@ import {
 function InterventionsContent() {
   const searchParams = useSearchParams();
   const preselectedStudentId = searchParams ? searchParams.get('student') : null;
+  const { t, language } = useTranslation();
 
   // State
   const [searchTerm, setSearchTerm] = useState('');
@@ -82,10 +85,10 @@ function InterventionsContent() {
 
   // Columns for Kanban/Workflow
   const columns = [
-    { id: 'assigned', label: 'Assigned / Triage', color: 'border-t-4 border-t-red-500 bg-red-50/20' },
-    { id: 'in-progress', label: 'In Progress', color: 'border-t-4 border-t-amber-500 bg-amber-50/20' },
-    { id: 'follow-up', label: 'Follow-up Period', color: 'border-t-4 border-t-blue-500 bg-blue-50/20' },
-    { id: 'resolved', label: 'Resolved / Recovered', color: 'border-t-4 border-t-green-500 bg-green-50/20' },
+    { id: 'assigned', label: t('assignedTriageCol'), color: 'border-t-4 border-t-red-500 bg-red-50/20' },
+    { id: 'in-progress', label: t('inProgressCol'), color: 'border-t-4 border-t-amber-500 bg-amber-50/20' },
+    { id: 'follow-up', label: t('followUpCol'), color: 'border-t-4 border-t-blue-500 bg-blue-50/20' },
+    { id: 'resolved', label: t('resolvedRecoveredCol'), color: 'border-t-4 border-t-green-500 bg-green-50/20' },
   ];
 
   // Move state workflow
@@ -139,8 +142,8 @@ function InterventionsContent() {
 
   return (
     <PageWrapper 
-      title="Intervention Center" 
-      subtitle="Deploy customized support plans, monitor case pipelines, and log outreach results"
+      title={t('interventionCenterTitle')} 
+      subtitle={t('interventionCenterSubtitle')}
     >
       <div className="space-y-6">
 
@@ -153,7 +156,7 @@ function InterventionsContent() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
               <input
                 type="text"
-                placeholder="Search cases by student name or action type..."
+                placeholder={t('searchCases')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 text-[#1A1A2E]"
@@ -162,17 +165,17 @@ function InterventionsContent() {
             
             {/* Dropdown status */}
             <div className="flex items-center gap-1.5 bg-[#FAF7F2] border border-[#E8DDD0] px-3 py-2 rounded-xl">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280]">Pipeline:</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280]">{t('pipelineLabel')}</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="bg-transparent border-0 text-xs font-semibold focus:outline-none text-[#1A1A2E]"
               >
-                <option value="all">All Stages</option>
-                <option value="assigned">Assigned</option>
-                <option value="in-progress">In Progress</option>
-                <option value="follow-up">Follow-up</option>
-                <option value="resolved">Resolved</option>
+                <option value="all">{t('allStages')}</option>
+                <option value="assigned">{t('assignedStage')}</option>
+                <option value="in-progress">{t('inProgressStage')}</option>
+                <option value="follow-up">{t('followUpStage')}</option>
+                <option value="resolved">{t('resolvedStage')}</option>
               </select>
             </div>
           </div>
@@ -181,7 +184,7 @@ function InterventionsContent() {
             onClick={() => setShowAssignModal(true)}
             className="w-full md:w-auto px-5 py-2.5 bg-[#C75B39] hover:bg-[#A94A2D] text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <PlusCircle className="w-4 h-4" /> Deploy Intervention
+            <PlusCircle className="w-4 h-4" /> {t('deployIntervention')}
           </button>
 
         </div>
@@ -212,19 +215,19 @@ function InterventionsContent() {
                             <Link href={`/students/${item.studentId}`} className="font-bold text-sm text-[#1A1A2E] hover:underline hover:text-[#C75B39]">
                               {item.studentName}
                             </Link>
-                            <p className="text-[10px] text-[#6B7280]">Class {item.studentClass}-{item.studentSection} • ID: {item.studentId}</p>
+                            <p className="text-[10px] text-[#6B7280]">{t('classPrefix')} {item.studentClass}-{item.studentSection} • ID: {item.studentId}</p>
                           </div>
                           <RiskBadge level={item.studentRisk} className="scale-90 transform origin-top-right" />
                         </div>
 
                         <div className="p-2.5 bg-[#FAF7F2] rounded-lg border border-[#E8DDD0]/50 space-y-1">
-                          <p className="font-bold text-[#1A1A2E] text-[11px]">{item.type}</p>
-                          <p className="text-[#6B7280] leading-relaxed text-[10px]">{item.description}</p>
+                          <p className="font-bold text-[#1A1A2E] text-[11px]">{tDynamic(item.type, language)}</p>
+                          <p className="text-[#6B7280] leading-relaxed text-[10px]">{tDynamic(item.description, language)}</p>
                         </div>
 
                         <div className="flex items-center gap-1.5 text-[10px] text-[#6B7280] border-t border-[#E8DDD0]/40 pt-2">
                           <User className="w-3.5 h-3.5 text-[#9CA3AF]" />
-                          <span>Owner: <span className="font-semibold text-[#1A1A2E]">{item.assignedTo}</span></span>
+                          <span>{t('ownerLabel')} <span className="font-semibold text-[#1A1A2E]">{tDynamic(item.assignedTo, language)}</span></span>
                         </div>
 
                         <div className="flex items-center justify-between gap-1 text-[9px] text-[#9CA3AF] mt-1">
@@ -237,14 +240,14 @@ function InterventionsContent() {
                               className="px-2 py-1 bg-white hover:bg-[#FFF8F0] border border-[#E8DDD0] hover:border-[#C75B39]/50 text-[#C75B39] font-bold rounded-lg transition-all flex items-center gap-0.5 cursor-pointer"
                               title="Advance workflow status"
                             >
-                              <span>Advance</span>
+                              <span>{t('advanceLabel')}</span>
                               <ChevronRight className="w-3 h-3" />
                             </button>
                           )}
 
                           {col.id === 'resolved' && (
                             <span className="text-[#4A7C59] font-semibold flex items-center gap-0.5">
-                              <CheckCircle2 className="w-3 h-3" /> Success
+                              <CheckCircle2 className="w-3 h-3" /> {t('successLabel')}
                             </span>
                           )}
                         </div>
@@ -253,7 +256,7 @@ function InterventionsContent() {
                     ))
                   ) : (
                     <div className="flex-1 flex items-center justify-center border border-dashed border-[#E8DDD0] rounded-xl p-6 text-center text-[#6B7280] italic text-[11px]">
-                      No active cases in this stage.
+                      {t('noActiveCases')}
                     </div>
                   )}
                 </div>
@@ -269,14 +272,14 @@ function InterventionsContent() {
             <div className="bg-white border border-[#E8DDD0] rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl">
               <div className="flex justify-between items-start border-b border-[#E8DDD0] pb-3">
                 <div>
-                  <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Deploy Support Workplan</h3>
-                  <p className="text-xs text-[#6B7280]">Select risk profile and map recommended intervention</p>
+                  <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('deploySupportWorkplan')}</h3>
+                  <p className="text-xs text-[#6B7280]">{t('selectRiskProfile')}</p>
                 </div>
                 <button 
                   onClick={() => setShowAssignModal(false)}
                   className="p-1 hover:bg-[#FAF7F2] rounded-lg text-[#6B7280] hover:text-[#1A1A2E]"
                 >
-                  <span className="text-sm font-bold">Close</span>
+                  <span className="text-sm font-bold">{t('closeLabel')}</span>
                 </button>
               </div>
 
@@ -284,17 +287,17 @@ function InterventionsContent() {
                 
                 {/* Student Select */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Target Student</label>
+                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('targetStudent')}</label>
                   <select
                     value={formStudentId}
                     onChange={(e) => setFormStudentId(e.target.value)}
                     className="w-full px-3 py-2 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 text-[#1A1A2E]"
                     required
                   >
-                    <option value="">-- Select Student --</option>
+                    <option value="">{t('selectStudent')}</option>
                     {students.map(s => (
                       <option key={s.id} value={s.id}>
-                        {s.name} (Class {s.class}-{s.section} • Risk: {s.riskLevel.toUpperCase()})
+                        {s.name} ({t('classPrefix')} {s.class}-{s.section} • {t('riskLabel')} {tDynamic(s.riskLevel, language).toUpperCase()})
                       </option>
                     ))}
                   </select>
@@ -302,7 +305,7 @@ function InterventionsContent() {
 
                 {/* Catalog Option Select */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Action Plan Type</label>
+                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('actionPlanType')}</label>
                   <select
                     value={formCatalogId}
                     onChange={(e) => setFormCatalogId(e.target.value)}
@@ -311,7 +314,7 @@ function InterventionsContent() {
                   >
                     {interventionCatalog.map(c => (
                       <option key={c.id} value={c.id}>
-                        {c.type} ({c.priority.toUpperCase()} priority • Role: {c.responsibleRole})
+                        {tDynamic(c.type, language)} ({tDynamic(c.priority, language).toUpperCase()} • {language === 'hi' ? 'भूमिका' : 'Role'}: {tDynamic(c.responsibleRole, language)})
                       </option>
                     ))}
                   </select>
@@ -319,7 +322,7 @@ function InterventionsContent() {
 
                 {/* Owner Input */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Responsible Teacher</label>
+                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('responsibleTeacher')}</label>
                   <input
                     type="text"
                     value={formAssignee}
@@ -332,11 +335,11 @@ function InterventionsContent() {
 
                 {/* Customize Notes */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">Customized Case Notes (Optional)</label>
+                  <label className="block text-xs font-semibold text-[#1A1A2E] mb-1.5">{t('customizedCaseNotes')}</label>
                   <textarea
                     value={formNotes}
                     onChange={(e) => setFormNotes(e.target.value)}
-                    placeholder="Describe direct targets (e.g. schedule 3 home visits, provide regional-language Hindi notes...)"
+                    placeholder={t('caseNotesPlaceholder')}
                     className="w-full min-h-[80px] p-2.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 text-[#1A1A2E]"
                   />
                 </div>
@@ -345,7 +348,7 @@ function InterventionsContent() {
                   type="submit"
                   className="w-full py-2.5 bg-[#C75B39] hover:bg-[#A94A2D] text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1 cursor-pointer"
                 >
-                  <CheckCircle2 className="w-4 h-4" /> Activate Support Plan
+                  <CheckCircle2 className="w-4 h-4" /> {t('activateSupportPlan')}
                 </button>
 
               </form>
@@ -359,8 +362,9 @@ function InterventionsContent() {
 }
 
 export default function InterventionsPage() {
+  const { t } = useTranslation();
   return (
-    <Suspense fallback={<div className="p-6 text-center text-xs text-[#6B7280]">Loading interventions...</div>}>
+    <Suspense fallback={<div className="p-6 text-center text-xs text-[#6B7280]">{t('loadingInterventions')}</div>}>
       <InterventionsContent />
     </Suspense>
   );

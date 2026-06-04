@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { students } from '@/lib/data/students';
+import { useTranslation } from '@/lib/LanguageContext';
+import { tDynamic } from '@/lib/dynamicTranslations';
 import { 
   Mic, 
   MicOff, 
@@ -18,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export default function VoiceObservationsPage() {
+  const { t, language } = useTranslation();
   const [isRecording, setIsRecording] = useState(false);
   const [transcription, setTranscription] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -67,7 +70,7 @@ export default function VoiceObservationsPage() {
 
         rec.onstart = () => {
           setIsRecording(true);
-          setTranscription('Listening... (speak now)');
+          setTranscription(t('listeningSpeak'));
           setSuccessSaved(false);
         };
 
@@ -104,7 +107,7 @@ export default function VoiceObservationsPage() {
       } catch (err) {
         // Fallback for double starts or permissions
         setIsRecording(true);
-        setTranscription('Simulating voice input...');
+        setTranscription(t('simulatingVoice'));
         setTimeout(() => {
           // Select random sample
           const sample = sampleVoiceTexts[Math.floor(Math.random() * sampleVoiceTexts.length)];
@@ -175,8 +178,8 @@ export default function VoiceObservationsPage() {
 
   return (
     <PageWrapper 
-      title="Voice-AI Observation Intake" 
-      subtitle="Speak comments in Hindi, English, or mixed language to update student profiles instantly"
+      title={t('voiceAiTitle')} 
+      subtitle={t('voiceAiSubtitle')}
     >
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
@@ -215,12 +218,12 @@ export default function VoiceObservationsPage() {
 
             <div className="mt-5 space-y-1">
               <h4 className="font-bold text-sm text-[#1A1A2E]">
-                {isRecording ? 'Listening to voice...' : 'Press Mic to Record Observation'}
+                {isRecording ? t('listeningToVoice') : t('pressMicToRecord')}
               </h4>
               <p className="text-xs text-[#6B7280]">
                 {speechSupported 
-                  ? 'Mix Hindi & English naturally (Hinglish supported)' 
-                  : 'Speech API fallback active • Tap to simulate voice'
+                  ? t('mixHindiEnglish') 
+                  : t('speechApiFallback')
                 }
               </p>
             </div>
@@ -228,7 +231,7 @@ export default function VoiceObservationsPage() {
             {/* Simulated success alert */}
             {successSaved && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 text-green-900 rounded-xl text-xs font-semibold flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-[#4A7C59]" /> Student profile updated successfully with new observations.
+                <CheckCircle className="w-4 h-4 text-[#4A7C59]" /> {t('profileUpdatedSuccess')}
               </div>
             )}
 
@@ -236,7 +239,7 @@ export default function VoiceObservationsPage() {
 
           {/* SIMULATED DEMO VOICE CARDS */}
           <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm space-y-3">
-            <h4 className="font-bold text-xs uppercase tracking-wider text-[#6B7280]">Test Sample Pronouncers (Click to Simulate)</h4>
+            <h4 className="font-bold text-xs uppercase tracking-wider text-[#6B7280]">{t('testSamplePronounce')}</h4>
             <div className="grid gap-2.5">
               {sampleVoiceTexts.map((sample, idx) => (
                 <button
@@ -264,10 +267,10 @@ export default function VoiceObservationsPage() {
           {/* TEXT FIELD */}
           <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm space-y-3">
             <h4 className="font-bold text-xs uppercase tracking-wider text-[#6B7280] flex items-center gap-1">
-              <FileText className="w-4 h-4" /> Live Transcript
+              <FileText className="w-4 h-4" /> {t('liveTranscript')}
             </h4>
             <div className="min-h-[100px] p-3.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-xs text-[#1A1A2E] leading-relaxed italic">
-              {transcription || 'No active transcript recorded yet. Select a sample below or trigger mic recording.'}
+              {transcription || t('noTranscriptYet')}
             </div>
           </div>
 
@@ -275,13 +278,13 @@ export default function VoiceObservationsPage() {
           <div className="bg-[#FFF8F0] border border-[#E8DDD0] rounded-2xl p-5 shadow-sm space-y-4">
             <h4 className="font-bold text-xs uppercase tracking-wider text-[#1A1A2E] flex items-center gap-1.5 border-b border-[#E8DDD0] pb-2.5">
               <BrainCircuit className="w-4 h-4 text-[#C75B39]" /> 
-              AI Extraction & Entity Mapping
+              {t('aiExtractionTitle')}
             </h4>
 
             {isProcessing ? (
               <div className="py-6 text-center text-xs text-[#6B7280] space-y-2">
                 <div className="w-6 h-6 border-2 border-[#C75B39] border-t-transparent rounded-full animate-spin mx-auto" />
-                <p>Analyzing syntax & sentiment...</p>
+                <p>{t('analyzingSyntax')}</p>
               </div>
             ) : extractedStudent ? (
               <div className="space-y-4 text-xs">
@@ -290,7 +293,7 @@ export default function VoiceObservationsPage() {
                 <div className="flex justify-between items-center p-3 bg-white border border-[#E8DDD0] rounded-xl">
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-[#C75B39]" />
-                    <span className="font-semibold text-[#6B7280]">Identified Student:</span>
+                    <span className="font-semibold text-[#6B7280]">{t('identifiedStudent')}</span>
                   </div>
                   <span className="font-bold text-sm text-[#1A1A2E]">{extractedStudent}</span>
                 </div>
@@ -298,12 +301,12 @@ export default function VoiceObservationsPage() {
                 {/* Detected Concerns */}
                 <div className="space-y-1.5">
                   <span className="text-[10px] uppercase font-bold text-[#6B7280] flex items-center gap-1">
-                    <AlertTriangle className="w-3.5 h-3.5 text-[#D4A843]" /> Mapped Risk Factors
+                    <AlertTriangle className="w-3.5 h-3.5 text-[#D4A843]" /> {t('mappedRiskFactors')}
                   </span>
                   <div className="grid gap-1">
                     {detectedConcerns.map((concern, idx) => (
                       <div key={idx} className="p-2 bg-white border border-[#E8DDD0] rounded-lg font-medium text-[#1A1A2E]">
-                        {concern}
+                        {tDynamic(concern, language)}
                       </div>
                     ))}
                   </div>
@@ -312,12 +315,12 @@ export default function VoiceObservationsPage() {
                 {/* Suggested Actions */}
                 <div className="space-y-1.5">
                   <span className="text-[10px] uppercase font-bold text-[#6B7280] flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-[#4A7C59]" /> Suggested Interventions
+                    <Sparkles className="w-3.5 h-3.5 text-[#4A7C59]" /> {t('suggestedInterventions')}
                   </span>
                   <div className="grid gap-1">
                     {suggestedActions.map((action, idx) => (
                       <div key={idx} className="p-2 bg-white border border-[#E8DDD0] rounded-lg font-medium text-[#1A1A2E]">
-                        {action}
+                        {tDynamic(action, language)}
                       </div>
                     ))}
                   </div>
@@ -328,12 +331,12 @@ export default function VoiceObservationsPage() {
                   onClick={handleSaveObservation}
                   className="w-full py-2.5 bg-[#1A1A2E] hover:bg-[#C75B39] text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer mt-2"
                 >
-                  <MessageSquarePlus className="w-4 h-4" /> Save to Student Profile
+                  <MessageSquarePlus className="w-4 h-4" /> {t('saveToStudentProfile')}
                 </button>
 
               </div>
             ) : (
-              <p className="text-xs text-[#6B7280] text-center py-6 italic">No entities extracted yet. Speak into the mic or click a test sample.</p>
+              <p className="text-xs text-[#6B7280] text-center py-6 italic">{t('noEntitiesYet')}</p>
             )}
 
           </div>

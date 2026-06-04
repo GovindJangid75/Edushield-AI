@@ -11,9 +11,11 @@ import { api } from '@/lib/api';
 import { getLocalStudents, Student } from '@/lib/data/students';
 import { Search, Filter, Sparkles, Phone, Eye, ClipboardPlus, X, Plus, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/lib/LanguageContext';
 
 export default function StudentsOverviewPage() {
   const router = useRouter();
+  const { t, language } = useTranslation();
   const [allStudents, setAllStudents] = useState<Student[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClass, setSelectedClass] = useState<string>('all');
@@ -91,8 +93,8 @@ export default function StudentsOverviewPage() {
 
   return (
     <PageWrapper 
-      title="Student Intelligence Queue" 
-      subtitle="View engagement data, prediction confidence, and trigger triage actions"
+      title={t('studentIntelligenceQueue')} 
+      subtitle={t('studentIntelligenceSubtitle')}
     >
       <div className="space-y-6">
 
@@ -105,7 +107,7 @@ export default function StudentsOverviewPage() {
               whileTap={{ scale: 0.97 }}
               className="px-4 py-2.5 bg-[#C75B39] hover:bg-[#A94A2D] text-white font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
-              <UserPlus className="w-4 h-4" /> Add New Student
+              <UserPlus className="w-4 h-4" /> {t('addNewStudent')}
             </motion.button>
           </div>
         )}
@@ -119,7 +121,7 @@ export default function StudentsOverviewPage() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
               <input
                 type="text"
-                placeholder="Search by student name, ID, or guardian..."
+                placeholder={t('searchByNameIdGuardian')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C75B39]/20 focus:border-[#C75B39]/40 transition-all text-[#1A1A2E]"
@@ -131,33 +133,33 @@ export default function StudentsOverviewPage() {
               
               {/* Class selector */}
               <div className="flex items-center gap-1.5 bg-[#FAF7F2] border border-[#E8DDD0] px-3 py-2 rounded-xl">
-                <span className="text-xs font-semibold text-[#6B7280]">Class:</span>
+                <span className="text-xs font-semibold text-[#6B7280]">{t('classLabel')}</span>
                 <select
                   value={role === 'teacher' ? '8' : selectedClass}
                   onChange={(e) => setSelectedClass(e.target.value)}
                   disabled={role === 'teacher'}
                   className="bg-transparent border-0 text-xs font-bold focus:outline-none text-[#1A1A2E] disabled:opacity-80"
                 >
-                  {role !== 'teacher' && <option value="all">All Classes</option>}
+                  {role !== 'teacher' && <option value="all">{t('allClasses')}</option>}
                   {classesList.map(c => (
-                    <option key={c} value={c}>Class {c}</option>
+                    <option key={c} value={c}>{t('classPrefix')} {c}</option>
                   ))}
                 </select>
               </div>
 
               {/* Risk Level selector */}
               <div className="flex items-center gap-1.5 bg-[#FAF7F2] border border-[#E8DDD0] px-3 py-2 rounded-xl">
-                <span className="text-xs font-semibold text-[#6B7280]">Risk:</span>
+                <span className="text-xs font-semibold text-[#6B7280]">{t('riskLabel')}</span>
                 <select
                   value={selectedRisk}
                   onChange={(e) => setSelectedRisk(e.target.value)}
                   className="bg-transparent border-0 text-xs font-bold focus:outline-none text-[#1A1A2E]"
                 >
-                  <option value="all">All Risks</option>
-                  <option value="critical">Critical</option>
-                  <option value="high">High Risk</option>
-                  <option value="moderate">Moderate</option>
-                  <option value="stable">Stable</option>
+                  <option value="all">{t('allRisks')}</option>
+                  <option value="critical">{t('riskCritical')}</option>
+                  <option value="high">{t('highRisk')}</option>
+                  <option value="moderate">{t('riskModerate')}</option>
+                  <option value="stable">{t('riskStable')}</option>
                 </select>
               </div>
 
@@ -173,7 +175,7 @@ export default function StudentsOverviewPage() {
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Hidden Strugglers</span>
+                <span>{t('hiddenStrugglers')}</span>
               </motion.button>
 
               {/* Reset button */}
@@ -183,7 +185,7 @@ export default function StudentsOverviewPage() {
                   whileTap={{ scale: 0.95 }}
                   className="px-3 py-2 text-xs font-semibold text-[#C75B39] hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  <X className="w-3 h-3" /> Clear Filters
+                  <X className="w-3 h-3" /> {t('clearFilters')}
                 </motion.button>
               )}
 
@@ -193,9 +195,9 @@ export default function StudentsOverviewPage() {
 
           {/* Results Summary */}
           <div className="flex justify-between items-center text-xs text-[#6B7280] border-t border-[#E8DDD0]/60 pt-3">
-            <span>Found <span className="font-bold text-[#1A1A2E]">{filteredStudents.length}</span> students matches</span>
+            <span>{t('foundStudents')} <span className="font-bold text-[#1A1A2E]">{filteredStudents.length}</span> {t('studentsMatches')}</span>
             {showHiddenOnly && (
-              <span className="text-indigo-600 font-medium">Highlighting invisible students who may mask risks under moderate grades</span>
+              <span className="text-indigo-600 font-medium">{t('highlightingInvisible')}</span>
             )}
           </div>
 
@@ -220,7 +222,7 @@ export default function StudentsOverviewPage() {
                       <h4 className="text-sm font-bold text-[#1A1A2E] hover:underline">
                         <Link href={`/students/${student.id}`}>{student.name}</Link>
                       </h4>
-                      <p className="text-[10px] text-[#6B7280] font-mono">Class {student.class}-{student.section} • {student.id}</p>
+                      <p className="text-[10px] text-[#6B7280] font-mono">{t('classPrefix')} {student.class}-{student.section} • {student.id}</p>
                     </div>
                   </div>
                   <RiskBadge level={student.riskLevel} />
@@ -228,14 +230,14 @@ export default function StudentsOverviewPage() {
 
                 <div className="grid grid-cols-2 gap-3 text-xs bg-[#FAF7F2] p-2.5 rounded-xl border border-[#E8DDD0]/50">
                   <div>
-                    <span className="text-[9px] text-[#6B7280] uppercase tracking-wider block font-semibold">Attendance</span>
+                    <span className="text-[9px] text-[#6B7280] uppercase tracking-wider block font-semibold">{t('attendanceLabel')}</span>
                     <p className={`font-bold font-mono text-sm ${
                       student.attendanceRate < 70 ? 'text-[#DC2626]' :
                       student.attendanceRate < 80 ? 'text-[#D4A843]' : 'text-[#4A7C59]'
                     }`}>{student.attendanceRate}%</p>
                   </div>
                   <div>
-                    <span className="text-[9px] text-[#6B7280] uppercase tracking-wider block font-semibold">Academics</span>
+                    <span className="text-[9px] text-[#6B7280] uppercase tracking-wider block font-semibold">{t('academicsLabel')}</span>
                     <p className="font-bold font-mono text-sm text-[#1A1A2E]">{student.academicScore}%</p>
                   </div>
                 </div>
@@ -244,21 +246,21 @@ export default function StudentsOverviewPage() {
                   <Link 
                     href={`/students/${student.id}`} 
                     className="p-2 hover:bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-[#6B7280] flex items-center justify-center shadow-xs"
-                    title="View AI Profile"
+                    title={t('viewAiProfile')}
                   >
                     <Eye className="w-4 h-4" />
                   </Link>
                   <Link 
                     href={`/interventions?student=${student.id}`} 
                     className="p-2 hover:bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-[#C75B39] flex items-center justify-center shadow-xs"
-                    title="Assign Interventions"
+                    title={t('assignInterventions')}
                   >
                     <ClipboardPlus className="w-4 h-4" />
                   </Link>
                   <a 
                     href={`tel:${student.guardianPhone}`} 
                     className="p-2 hover:bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl text-[#4A7C59] flex items-center justify-center shadow-xs"
-                    title="Call Guardian"
+                    title={t('callGuardian')}
                   >
                     <Phone className="w-4 h-4" />
                   </a>
@@ -267,7 +269,7 @@ export default function StudentsOverviewPage() {
             ))
           ) : (
             <div className="p-12 text-center text-xs text-[#6B7280] bg-white border border-[#E8DDD0] rounded-2xl">
-              No matching records.
+              {t('noMatchingRecords')}
             </div>
           )}
         </div>
@@ -278,13 +280,13 @@ export default function StudentsOverviewPage() {
             <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="bg-[#FAF7F2] border-b border-[#E8DDD0] text-xs font-bold text-[#6B7280] uppercase tracking-wider">
-                  <th className="px-6 py-4">Student ID & Name</th>
-                  <th className="px-6 py-4">Class</th>
-                  <th className="px-6 py-4">Urgency Triage</th>
-                  <th className="px-6 py-4">Attendance</th>
-                  <th className="px-6 py-4">Academics</th>
-                  <th className="px-6 py-4">AI Confidence</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-6 py-4">{t('studentIdAndName')}</th>
+                  <th className="px-6 py-4">{t('class')}</th>
+                  <th className="px-6 py-4">{t('urgencyTriage')}</th>
+                  <th className="px-6 py-4">{t('attendance')}</th>
+                  <th className="px-6 py-4">{t('academicsLabel')}</th>
+                  <th className="px-6 py-4">{t('aiConfidenceLabel')}</th>
+                  <th className="px-6 py-4 text-right">{t('actionsLabel')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8DDD0]/50">
@@ -310,7 +312,7 @@ export default function StudentsOverviewPage() {
                               </Link>
                               {student.isHiddenStudent && (
                                 <span className="text-[9px] bg-indigo-50 border border-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-medium inline-flex items-center gap-0.5" title="Silently struggling student">
-                                  <Sparkles className="w-2.5 h-2.5" /> Hidden
+                                  <Sparkles className="w-2.5 h-2.5" /> {t('hiddenLabel')}
                                 </span>
                               )}
                             </div>
@@ -321,7 +323,7 @@ export default function StudentsOverviewPage() {
 
                       {/* Class */}
                       <td className="px-6 py-4 font-medium text-[#1A1A2E]">
-                        Class {student.class}-{student.section}
+                        {t('classPrefix')} {student.class}-{student.section}
                       </td>
 
                       {/* Risk Badge */}
@@ -367,7 +369,7 @@ export default function StudentsOverviewPage() {
                           <Link
                             href={`/students/${student.id}`}
                             className="p-2 hover:bg-[#FAF7F2] border border-transparent hover:border-[#E8DDD0] rounded-lg text-[#6B7280] hover:text-[#1A1A2E] transition-all flex items-center justify-center shadow-xs"
-                            title="Diagnose student"
+                            title={t('diagnoseStudent')}
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
@@ -375,7 +377,7 @@ export default function StudentsOverviewPage() {
                           <Link
                             href={`/interventions?student=${student.id}`}
                             className="p-2 hover:bg-[#FAF7F2] border border-transparent hover:border-[#E8DDD0] rounded-lg text-[#C75B39] transition-all flex items-center justify-center shadow-xs"
-                            title="Assign action plan"
+                            title={t('assignActionPlan')}
                           >
                             <ClipboardPlus className="w-4 h-4" />
                           </Link>
@@ -383,7 +385,7 @@ export default function StudentsOverviewPage() {
                           <a
                             href={`tel:${student.guardianPhone}`}
                             className="p-2 hover:bg-[#FAF7F2] border border-transparent hover:border-[#E8DDD0] rounded-lg text-[#4A7C59] transition-all flex items-center justify-center shadow-xs"
-                            title={`Call Guardian: ${student.guardianName} (${student.guardianPhone})`}
+                            title={`${t('callGuardian')}: ${student.guardianName} (${student.guardianPhone})`}
                           >
                             <Phone className="w-4 h-4" />
                           </a>
@@ -395,7 +397,7 @@ export default function StudentsOverviewPage() {
                 ) : (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center text-[#6B7280]">
-                      No student records match the selected filters. Try clearing filters or revising terms.
+                      {t('noMatchingFilters')}
                     </td>
                   </tr>
                 )}

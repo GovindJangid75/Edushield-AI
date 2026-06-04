@@ -269,9 +269,9 @@ export default function LoginPage() {
             <span>{t('footerText')}</span>
           </div>
           <div className="flex gap-4">
-            <span className="hover:underline cursor-pointer">UDISE Integration</span>
-            <span className="hover:underline cursor-pointer">Responsible AI Guidelines</span>
-            <span className="hover:underline cursor-pointer">Privacy Policy</span>
+            <span className="hover:underline cursor-pointer">{t('udiseIntegration')}</span>
+            <span className="hover:underline cursor-pointer">{t('responsibleAiGuidelines')}</span>
+            <span className="hover:underline cursor-pointer">{t('privacyPolicy')}</span>
           </div>
         </div>
       </div>

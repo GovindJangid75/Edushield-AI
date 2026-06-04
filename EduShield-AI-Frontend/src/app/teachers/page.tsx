@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { teachers, Teacher, burnoutDistribution } from '@/lib/data/teachers';
+import { useTranslation } from '@/lib/LanguageContext';
+import { tDynamic } from '@/lib/dynamicTranslations';
 import { 
   Heart, 
   Flame, 
@@ -18,6 +20,7 @@ import {
 import CustomSparkline from '@/components/charts/CustomSparkline';
 
 export default function TeacherWellnessDashboard() {
+  const { t, language } = useTranslation();
   const [selectedTeacherId, setSelectedTeacherId] = useState<string>(teachers[0].id);
 
   const selectedTeacher = teachers.find(t => t.id === selectedTeacherId) || teachers[0];
@@ -30,16 +33,16 @@ export default function TeacherWellnessDashboard() {
   };
 
   const getBurnoutBadge = (value: number) => {
-    if (value >= 75) return { label: 'Severe Stress', color: 'bg-red-50 text-red-700 border-red-200' };
-    if (value >= 60) return { label: 'High Burden', color: 'bg-orange-50 text-orange-700 border-orange-200' };
-    if (value >= 40) return { label: 'Moderate', color: 'bg-amber-50 text-amber-700 border-amber-200' };
-    return { label: 'Optimal / Stable', color: 'bg-green-50 text-green-700 border-green-200' };
+    if (value >= 75) return { label: t('severeStress'), color: 'bg-red-50 text-red-700 border-red-200' };
+    if (value >= 60) return { label: t('highBurden'), color: 'bg-orange-50 text-orange-700 border-orange-200' };
+    if (value >= 40) return { label: t('moderateLabel'), color: 'bg-amber-50 text-amber-700 border-amber-200' };
+    return { label: t('optimalStable'), color: 'bg-green-50 text-green-700 border-green-200' };
   };
 
   return (
     <PageWrapper 
-      title="Teacher Wellness Monitor" 
-      subtitle="Analyze administrative burden, classroom stress trends, and prevent educational burnout"
+      title={t('teacherWellnessTitle')} 
+      subtitle={t('teacherWellnessSubtitle')}
     >
       <div className="space-y-6">
 
@@ -49,16 +52,16 @@ export default function TeacherWellnessDashboard() {
             <div>
               <h3 className="text-lg font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E] flex items-center gap-2">
                 <Grid className="w-5 h-5 text-[#C75B39]" /> 
-                School Burnout Heatmap Grid
+                {t('burnoutHeatmapTitle')}
               </h3>
-              <p className="text-xs text-[#6B7280]">AI monitors administrative burden, class workload, and correction weight</p>
+              <p className="text-xs text-[#6B7280]">{t('burnoutHeatmapDesc')}</p>
             </div>
             {/* Color key */}
             <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold">
-              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#4A7C59] rounded" /> Stable (&lt;50)</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#D4A843] rounded" /> Moderate (50-65)</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#EA580C] rounded" /> High (65-80)</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#DC2626] rounded" /> Critical (80+)</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#4A7C59] rounded" /> {t('stableLessThan50')}</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#D4A843] rounded" /> {t('moderate50to65')}</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#EA580C] rounded" /> {t('high65to80')}</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-[#DC2626] rounded" /> {t('critical80plus')}</span>
             </div>
           </div>
 
@@ -66,13 +69,13 @@ export default function TeacherWellnessDashboard() {
             <table className="w-full border-collapse text-left text-xs min-w-[700px]">
               <thead>
                 <tr className="bg-[#FAF7F2] border-b border-[#E8DDD0] text-gray-500 font-bold">
-                  <th className="px-4 py-3">Teacher ID & Name</th>
-                  <th className="px-4 py-3">Subject / Experience</th>
-                  <th className="px-4 py-3 text-center">Correction Weight</th>
-                  <th className="px-4 py-3 text-center">Class Stress</th>
-                  <th className="px-4 py-3 text-center">Attendance Burden</th>
-                  <th className="px-4 py-3 text-center">Emotional Fatigue</th>
-                  <th className="px-4 py-3 text-center">Burnout Score</th>
+                  <th className="px-4 py-3">{t('teacherIdName')}</th>
+                  <th className="px-4 py-3">{t('subjectExperience')}</th>
+                  <th className="px-4 py-3 text-center">{t('correctionWeight')}</th>
+                  <th className="px-4 py-3 text-center">{t('classStress')}</th>
+                  <th className="px-4 py-3 text-center">{t('attendanceBurden')}</th>
+                  <th className="px-4 py-3 text-center">{t('emotionalFatigue')}</th>
+                  <th className="px-4 py-3 text-center">{t('burnoutScore')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8DDD0]/40">
@@ -93,8 +96,8 @@ export default function TeacherWellnessDashboard() {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-[#6B7280]">
-                        <p className="font-semibold text-[#1A1A2E]">{teacher.subject}</p>
-                        <p className="text-[10px]">{teacher.yearsExperience} yrs exp</p>
+                        <p className="font-semibold text-[#1A1A2E]">{tDynamic(teacher.subject, language)}</p>
+                        <p className="text-[10px]">{teacher.yearsExperience} {t('yrsExp')}</p>
                       </td>
                       {/* Heatmap cells */}
                       <td className="px-4 py-3 text-center">
@@ -138,9 +141,9 @@ export default function TeacherWellnessDashboard() {
             
             <div className="flex justify-between items-start flex-wrap gap-4 border-b border-[#E8DDD0] pb-4">
               <div>
-                <span className="text-[10px] uppercase font-bold text-[#6B7280]">Detailed Workfile</span>
-                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">Wellness Audit: {selectedTeacher.name}</h3>
-                <p className="text-xs text-[#6B7280]">Subject: {selectedTeacher.subject} • Experience: {selectedTeacher.yearsExperience} Years</p>
+                <span className="text-[10px] uppercase font-bold text-[#6B7280]">{t('detailedWorkfile')}</span>
+                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-[#1A1A2E]">{t('wellnessAudit')} {selectedTeacher.name}</h3>
+                <p className="text-xs text-[#6B7280]">{t('subjectLabel')} {tDynamic(selectedTeacher.subject, language)} • {t('experienceLabel')} {selectedTeacher.yearsExperience} {t('yearsLabel')}</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${getBurnoutBadge(selectedTeacher.overallBurnout).color}`}>
@@ -153,11 +156,11 @@ export default function TeacherWellnessDashboard() {
             <div className="space-y-3 p-4 bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-xs font-semibold text-[#6B7280]">12-Week Stress progression</p>
-                  <p className="text-sm font-bold text-[#1A1A2E]">Burnout Trend Curve</p>
+                  <p className="text-xs font-semibold text-[#6B7280]">{t('weekStressProgression')}</p>
+                  <p className="text-sm font-bold text-[#1A1A2E]">{t('burnoutTrendCurve')}</p>
                 </div>
                 <span className="text-[10px] bg-white border border-[#E8DDD0] px-2 py-0.5 rounded font-bold font-mono">
-                  Weekly Samples
+                  {t('weeklySamples')}
                 </span>
               </div>
               <CustomSparkline data={selectedTeacher.burnoutTrend} color="#C75B39" height={70} width={640} />
@@ -171,8 +174,8 @@ export default function TeacherWellnessDashboard() {
                   <Clock className="w-5 h-5 text-[#C75B39]" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-[#6B7280]">Work Hours</p>
-                  <p className="text-base font-extrabold text-[#1A1A2E]">{selectedTeacher.workloadHoursPerWeek} hrs/wk</p>
+                  <p className="text-[10px] uppercase font-bold text-[#6B7280]">{t('workHours')}</p>
+                  <p className="text-base font-extrabold text-[#1A1A2E]">{selectedTeacher.workloadHoursPerWeek} {t('hrsPerWk')}</p>
                 </div>
               </div>
 
@@ -181,8 +184,8 @@ export default function TeacherWellnessDashboard() {
                   <BookOpen className="w-5 h-5 text-indigo-500" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-[#6B7280]">Case Load</p>
-                  <p className="text-base font-extrabold text-[#1A1A2E]">{selectedTeacher.interventionCases} Student cases</p>
+                  <p className="text-[10px] uppercase font-bold text-[#6B7280]">{t('caseLoad')}</p>
+                  <p className="text-base font-extrabold text-[#1A1A2E]">{selectedTeacher.interventionCases} {t('studentCases')}</p>
                 </div>
               </div>
 
@@ -191,8 +194,8 @@ export default function TeacherWellnessDashboard() {
                   <Activity className="w-5 h-5 text-[#4A7C59]" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-[#6B7280]">Experience</p>
-                  <p className="text-base font-extrabold text-[#1A1A2E]">{selectedTeacher.yearsExperience} Years</p>
+                  <p className="text-[10px] uppercase font-bold text-[#6B7280]">{t('experienceYears')}</p>
+                  <p className="text-base font-extrabold text-[#1A1A2E]">{selectedTeacher.yearsExperience} {t('yearsLabel')}</p>
                 </div>
               </div>
 
@@ -201,8 +204,8 @@ export default function TeacherWellnessDashboard() {
             {/* Attention Distribution indicator */}
             {selectedTeacher.attentionDistribution.length > 0 && (
               <div className="space-y-3">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-[#6B7280]">AI Attention Distribution Check</h4>
-                <p className="text-xs text-[#6B7280]">Are student risk profiles aligned with the teacher's focused attention?</p>
+                <h4 className="font-bold text-xs uppercase tracking-wider text-[#6B7280]">{t('aiAttentionDistribution')}</h4>
+                <p className="text-xs text-[#6B7280]">{t('attentionDistributionDesc')}</p>
                 
                 <div className="space-y-2">
                   {selectedTeacher.attentionDistribution.map((item, index) => (
@@ -213,7 +216,7 @@ export default function TeacherWellnessDashboard() {
                       </div>
                       <div className="text-right w-1/2">
                         <div className="flex justify-between items-center mb-1 text-[10px] font-semibold">
-                          <span>Focus level</span>
+                          <span>{t('focusLevel')}</span>
                           <span className="font-mono text-[#1A1A2E]">{item.attention}%</span>
                         </div>
                         <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -238,7 +241,7 @@ export default function TeacherWellnessDashboard() {
             <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm space-y-4">
               <h4 className="font-bold text-sm text-[#1A1A2E] font-[family-name:var(--font-heading)] uppercase tracking-wider flex items-center gap-1.5">
                 <AlertTriangle className="w-4 h-4 text-[#C75B39]" /> 
-                Copilot Wellness Alerts
+                {t('copilotWellnessAlerts')}
               </h4>
 
               {selectedTeacher.wellnessAlerts.length > 0 ? (
@@ -246,42 +249,42 @@ export default function TeacherWellnessDashboard() {
                   {selectedTeacher.wellnessAlerts.map((alert, index) => (
                     <div key={index} className="p-3 bg-red-50/50 border border-red-100/60 text-red-900 rounded-xl text-xs flex gap-2">
                       <Flame className="w-4 h-4 text-[#DC2626] flex-shrink-0 mt-0.5" />
-                      <p className="leading-relaxed font-medium">{alert}</p>
+                      <p className="leading-relaxed font-medium">{tDynamic(alert, language)}</p>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="p-4 bg-green-50/40 border border-green-100 text-green-900 rounded-xl text-xs flex gap-2">
                   <CheckCircle className="w-4 h-4 text-[#4A7C59] flex-shrink-0 mt-0.5" />
-                  <p className="leading-relaxed font-semibold">Teacher metrics are optimal. No wellness actions suggested currently.</p>
+                  <p className="leading-relaxed font-semibold">{t('teacherOptimalMsg')}</p>
                 </div>
               )}
             </div>
 
             {/* STATS BREAKDOWN GRID */}
             <div className="bg-white border border-[#E8DDD0] rounded-2xl p-5 shadow-sm space-y-4">
-              <h4 className="font-bold text-sm text-[#1A1A2E] font-[family-name:var(--font-heading)] uppercase tracking-wider">Burnout Distribution</h4>
+              <h4 className="font-bold text-sm text-[#1A1A2E] font-[family-name:var(--font-heading)] uppercase tracking-wider">{t('burnoutDistributionTitle')}</h4>
               
               <div className="space-y-3">
                 
                 <div className="flex justify-between items-center text-xs">
-                  <span className="flex items-center gap-2 font-medium text-[#1A1A2E]"><span className="w-2.5 h-2.5 rounded bg-[#DC2626]" /> Severe Stress</span>
-                  <span className="font-mono font-bold text-[#1A1A2E]">{burnoutDistribution.critical} teachers</span>
+                  <span className="flex items-center gap-2 font-medium text-[#1A1A2E]"><span className="w-2.5 h-2.5 rounded bg-[#DC2626]" /> {t('severeStress')}</span>
+                  <span className="font-mono font-bold text-[#1A1A2E]">{burnoutDistribution.critical} {t('teachers')}</span>
                 </div>
 
                 <div className="flex justify-between items-center text-xs">
-                  <span className="flex items-center gap-2 font-medium text-[#1A1A2E]"><span className="w-2.5 h-2.5 rounded bg-[#EA580C]" /> High Burden</span>
-                  <span className="font-mono font-bold text-[#1A1A2E]">{burnoutDistribution.high} teachers</span>
+                  <span className="flex items-center gap-2 font-medium text-[#1A1A2E]"><span className="w-2.5 h-2.5 rounded bg-[#EA580C]" /> {t('highBurden')}</span>
+                  <span className="font-mono font-bold text-[#1A1A2E]">{burnoutDistribution.high} {t('teachers')}</span>
                 </div>
 
                 <div className="flex justify-between items-center text-xs">
-                  <span className="flex items-center gap-2 font-medium text-[#1A1A2E]"><span className="w-2.5 h-2.5 rounded bg-[#D4A843]" /> Moderate</span>
-                  <span className="font-mono font-bold text-[#1A1A2E]">{burnoutDistribution.moderate} teachers</span>
+                  <span className="flex items-center gap-2 font-medium text-[#1A1A2E]"><span className="w-2.5 h-2.5 rounded bg-[#D4A843]" /> {t('moderateLabel')}</span>
+                  <span className="font-mono font-bold text-[#1A1A2E]">{burnoutDistribution.moderate} {t('teachers')}</span>
                 </div>
 
                 <div className="flex justify-between items-center text-xs">
-                  <span className="flex items-center gap-2 font-medium text-[#1A1A2E]"><span className="w-2.5 h-2.5 rounded bg-[#4A7C59]" /> Healthy / Optimal</span>
-                  <span className="font-mono font-bold text-[#1A1A2E]">{burnoutDistribution.healthy} teachers</span>
+                  <span className="flex items-center gap-2 font-medium text-[#1A1A2E]"><span className="w-2.5 h-2.5 rounded bg-[#4A7C59]" /> {t('optimalStable')}</span>
+                  <span className="font-mono font-bold text-[#1A1A2E]">{burnoutDistribution.healthy} {t('teachers')}</span>
                 </div>
 
               </div>

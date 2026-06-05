@@ -295,4 +295,4 @@ EduShield AI doesn’t just output a number; it runs a modular pipeline to give 
 Developed with ❤️ for the **Wadhwani AI Hackathon** by **Team: OptiMeal**.
 
 * **Backend:** [Edushield-AI-Backend](https://github.com/GovindJangid75/Edushield-AI-Backend)
-* **Frontend:** [EduShield-AI-Frontend](https://github.com/gouravnagori/EduShield-AI)
+* **Frontend:** [EduShield-AI-Frontend](https://github.com/GovindJangid75/Edushield-AI/tree/main/EduShield-AI-Frontend)
